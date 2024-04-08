@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>25bce0db-0e1c-4814-81d0-f1f9ae4ab65a</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT  ServiceZone.ATTRIBUTE_VALUE SERVICE_ZONE,LastDate.ATTRIBUTE_VALUE LAST_PICKUP_DATE,NextDate.ATTRIBUTE_VALUE NEXT_PICKUP_DATE
+FROM        -- XXCOK.COK_PS_ZONE_BRUSH_SCHED_VW
+ dbo.B1PERMIT WO
+    INNER JOIN dbo.BAPPSPECTABLE_VALUE ServiceZone
+		ON ServiceZone.SERV_PROV_CODE = WO.SERV_PROV_CODE
+		AND ServiceZone.B1_PER_ID1     = WO.B1_PER_ID1
+		AND ServiceZone.B1_PER_ID2     = WO.B1_PER_ID2
+		AND ServiceZone.B1_PER_ID3     = WO.B1_PER_ID3
+		AND ServiceZone.REC_STATUS     = 'A'
+		AND ServiceZone.GROUP_NAME     = 'PS_SCHED_BL'
+		AND ServiceZone.TABLE_NAME     = 'BRUSH PICKUP SCHEDULE'
+		AND ServiceZone.COLUMN_NAME    = 'Service Zone'
+    LEFT OUTER JOIN dbo.BAPPSPECTABLE_VALUE LastDate
+		ON LastDate.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND LastDate.B1_PER_ID1        = WO.B1_PER_ID1
+		AND LastDate.B1_PER_ID2        = WO.B1_PER_ID2
+		AND LastDate.B1_PER_ID3        = WO.B1_PER_ID3
+		AND LastDate.REC_STATUS        = 'A'
+		AND LastDate.GROUP_NAME        = 'PS_SCHED_BL'
+		AND LastDate.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND LastDate.COLUMN_NAME       = 'Last Pickup'
+		AND LastDate.ROW_INDEX         = ServiceZone.ROW_INDEX
+    LEFT OUTER JOIN dbo.BAPPSPECTABLE_VALUE NextDate
+		ON NextDate.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND NextDate.B1_PER_ID1        = WO.B1_PER_ID1
+		AND NextDate.B1_PER_ID2        = WO.B1_PER_ID2
+		AND NextDate.B1_PER_ID3        = WO.B1_PER_ID3
+		AND NextDate.REC_STATUS        = 'A'
+		AND NextDate.GROUP_NAME        = 'PS_SCHED_BL'
+		AND NextDate.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND NextDate.COLUMN_NAME       = 'Next Pickup'
+		AND NextDate.ROW_INDEX         = ServiceZone.ROW_INDEX
+	LEFT OUTER JOIN dbo.BAPPSPECTABLE_VALUE Week1
+		ON Week1.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND Week1.B1_PER_ID1        = WO.B1_PER_ID1
+		AND Week1.B1_PER_ID2        = WO.B1_PER_ID2
+		AND Week1.B1_PER_ID3        = WO.B1_PER_ID3
+		AND Week1.REC_STATUS        = 'A'
+		AND Week1.GROUP_NAME        = 'PS_SCHED_BL'
+		AND Week1.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND Week1.COLUMN_NAME       = 'Week 1'
+		AND Week1.ROW_INDEX         = ServiceZone.ROW_INDEX
+	LEFT OUTER JOIN dbo.BAPPSPECTABLE_VALUE Week2
+		ON Week2.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND Week2.B1_PER_ID1        = WO.B1_PER_ID1
+		AND Week2.B1_PER_ID2        = WO.B1_PER_ID2
+		AND Week2.B1_PER_ID3        = WO.B1_PER_ID3
+		AND Week2.REC_STATUS        = 'A'
+		AND Week2.GROUP_NAME        = 'PS_SCHED_BL'
+		AND Week2.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND Week2.COLUMN_NAME       = 'Week 2'
+		AND Week2.ROW_INDEX         = ServiceZone.ROW_INDEX
+  WHERE WO.B1_PER_GROUP          = 'AMS'
+  AND WO.B1_PER_TYPE             = 'Miscellaneous'
+  AND WO.B1_PER_SUB_TYPE         = 'Brush and Leaf Schedule'
+  AND wo.b1_per_category         = 'NA'
+  AND WO.REC_STATUS              = 'A'
+  AND WO.SERV_PROV_CODE='KNOXVILLE'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="SERVICE_ZONE">
+          <DataField>SERVICE_ZONE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LAST_PICKUP_DATE">
+          <DataField>LAST_PICKUP_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="NEXT_PICKUP_DATE">
+          <DataField>NEXT_PICKUP_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.59375in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.5625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.94792in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.1875in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>SERVICE ZONE</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>LAST PICKUP DATE</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>NEXT PICKUP DATE</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.1875in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="SERVICE_ZONE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SERVICE_ZONE.Value</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>SERVICE_ZONE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LAST_PICKUP_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LAST_PICKUP_DATE.Value</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LAST_PICKUP_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="NEXT_PICKUP_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!NEXT_PICKUP_DATE.Value</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>NEXT_PICKUP_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.02778in</Top>
+            <Left>0.41542in</Left>
+            <Height>0.375in</Height>
+            <Width>5.10417in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>0.4375in</Height>
+        <Style />
+      </Body>
+      <Width>6.79042in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.27431in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="ExecutionTime">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=DateAdd("h",1,Globals!ExecutionTime)</Value>
+                      <Style>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>ExecutionTime</rd:DefaultName>
+              <Left>0.14458in</Left>
+              <Height>0.25in</Height>
+              <Width>1.64583in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox8">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>COK Brush Schedule By Zone</Value>
+                      <Style>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox8</rd:DefaultName>
+              <Left>2.25917in</Left>
+              <Height>0.25in</Height>
+              <Width>2.0625in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="PageNumber">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!PageNumber</Value>
+                      <Style />
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>PageNumber</rd:DefaultName>
+              <Left>5.79042in</Left>
+              <Height>0.25in</Height>
+              <Width>1in</Width>
+              <ZIndex>2</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>7e396c38-ed31-469b-a96a-c450b0acf2b8</rd:ReportID>
+</Report>

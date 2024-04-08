@@ -1,0 +1,706 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/PRODUCTION/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>22a5794a-b38e-408c-a13f-cd713afcbd88</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>WITH cok_ps_service_zone_streets_vw
+AS
+(
+	SELECT ps.serv_prov_code,
+    ps.b1_per_id1,
+    ps.b1_per_id2,
+    ps.b1_per_id3,
+    ps.b1_alt_id,
+    --Accela.COK_FN_GET_APP_SPEC_INFO (ps.SERV_PROV_CODE, ps.b1_per_id1, ps.b1_per_id2, ps.b1_per_id3, 'Service Zone') Service_Zone,
+    (SELECT TOP 1 B1_CHECKLIST_COMMENT
+		FROM BCHCKBOX 
+		WHERE SERV_PROV_CODE = ps.SERV_PROV_CODE 
+		AND B1_PER_ID1 = ps.b1_per_id1 
+		AND B1_PER_ID2 = ps.b1_per_id2 
+		AND B1_PER_ID3 = ps.b1_per_id3 
+		AND REC_STATUS = 'A' 
+		AND B1_CHECKBOX_DESC like 'Service Zone') Service_Zone,
+	--Accela.COK_FN_GET_APP_SPEC_INFO (ps.SERV_PROV_CODE, ps.b1_per_id1, ps.b1_per_id2, ps.b1_per_id3, 'Street Name') Street_Name,
+    (SELECT TOP 1 B1_CHECKLIST_COMMENT
+		FROM BCHCKBOX 
+		WHERE SERV_PROV_CODE = ps.SERV_PROV_CODE 
+		AND B1_PER_ID1 = ps.b1_per_id1 
+		AND B1_PER_ID2 = ps.b1_per_id2 
+		AND B1_PER_ID3 = ps.b1_per_id3 
+		AND REC_STATUS = 'A' 
+		AND B1_CHECKBOX_DESC like 'Street Name') Street_Name,
+	--Accela.COK_FN_GET_APP_SPEC_INFO (ps.SERV_PROV_CODE, ps.b1_per_id1, ps.b1_per_id2, ps.b1_per_id3, 'Street Type') Street_Type,
+    (SELECT TOP 1 B1_CHECKLIST_COMMENT
+		FROM BCHCKBOX 
+		WHERE SERV_PROV_CODE = ps.SERV_PROV_CODE 
+		AND B1_PER_ID1 = ps.b1_per_id1 
+		AND B1_PER_ID2 = ps.b1_per_id2 
+		AND B1_PER_ID3 = ps.b1_per_id3 
+		AND REC_STATUS = 'A' 
+		AND B1_CHECKBOX_DESC like 'Street Type') Street_Type,    
+	--Accela.COK_FN_GET_APP_SPEC_INFO (ps.SERV_PROV_CODE, ps.b1_per_id1, ps.b1_per_id2, ps.b1_per_id3, 'Block From') Block_From,
+    (SELECT TOP 1 B1_CHECKLIST_COMMENT
+		FROM BCHCKBOX 
+		WHERE SERV_PROV_CODE = ps.SERV_PROV_CODE 
+		AND B1_PER_ID1 = ps.b1_per_id1 
+		AND B1_PER_ID2 = ps.b1_per_id2 
+		AND B1_PER_ID3 = ps.b1_per_id3 
+		AND REC_STATUS = 'A' 
+		AND B1_CHECKBOX_DESC like 'Block From') Block_From,
+	--Accela.COK_FN_GET_APP_SPEC_INFO (ps.SERV_PROV_CODE, ps.b1_per_id1, ps.b1_per_id2, ps.b1_per_id3, 'Block To') Block_To
+    (SELECT TOP 1 B1_CHECKLIST_COMMENT
+		FROM BCHCKBOX 
+		WHERE SERV_PROV_CODE = ps.SERV_PROV_CODE 
+		AND B1_PER_ID1 = ps.b1_per_id1 
+		AND B1_PER_ID2 = ps.b1_per_id2 
+		AND B1_PER_ID3 = ps.b1_per_id3 
+		AND REC_STATUS = 'A' 
+		AND B1_CHECKBOX_DESC like 'Block To') Block_To
+		
+  FROM B1PERMIT PS
+  WHERE PS.B1_PER_GROUP           = 'AMS'
+  AND PS.B1_PER_TYPE              = 'Miscellaneous'
+  AND PS.B1_PER_SUB_TYPE          = 'Service Zone Streets'
+  AND PS.b1_per_category          = 'NA'
+  AND ISNULL(PS.REC_STATUS,'A')      = 'A'
+  AND ISNULL(PS.B1_APPL_STATUS,' ') &lt;&gt; 'Canceled'
+) --select * from cok_ps_service_zone_streets_vw
+, cok_ps_zone_BRUSH_sched_vw
+AS
+(
+SELECT ServiceZone.ATTRIBUTE_VALUE Service_Zone,
+    LastDate.ATTRIBUTE_VALUE Last_Pickup_Date,
+    NextDate.ATTRIBUTE_VALUE Next_Pickup_Date,
+	Week1.ATTRIBUTE_VALUE Week_1,
+	Week2.ATTRIBUTE_VALUE Week_2
+  FROM B1PERMIT WO
+    INNER JOIN BAPPSPECTABLE_VALUE ServiceZone
+		ON ServiceZone.SERV_PROV_CODE = WO.SERV_PROV_CODE
+		AND ServiceZone.B1_PER_ID1     = WO.B1_PER_ID1
+		AND ServiceZone.B1_PER_ID2     = WO.B1_PER_ID2
+		AND ServiceZone.B1_PER_ID3     = WO.B1_PER_ID3
+		AND ServiceZone.REC_STATUS     = 'A'
+		AND ServiceZone.GROUP_NAME     = 'PS_SCHED_BL'
+		AND ServiceZone.TABLE_NAME     = 'BRUSH PICKUP SCHEDULE'
+		AND ServiceZone.COLUMN_NAME    = 'Service Zone'
+    LEFT OUTER JOIN BAPPSPECTABLE_VALUE LastDate
+		ON LastDate.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND LastDate.B1_PER_ID1        = WO.B1_PER_ID1
+		AND LastDate.B1_PER_ID2        = WO.B1_PER_ID2
+		AND LastDate.B1_PER_ID3        = WO.B1_PER_ID3
+		AND LastDate.REC_STATUS        = 'A'
+		AND LastDate.GROUP_NAME        = 'PS_SCHED_BL'
+		AND LastDate.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND LastDate.COLUMN_NAME       = 'Last Pickup'
+		AND LastDate.ROW_INDEX         = ServiceZone.ROW_INDEX
+    LEFT OUTER JOIN BAPPSPECTABLE_VALUE NextDate
+		ON NextDate.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND NextDate.B1_PER_ID1        = WO.B1_PER_ID1
+		AND NextDate.B1_PER_ID2        = WO.B1_PER_ID2
+		AND NextDate.B1_PER_ID3        = WO.B1_PER_ID3
+		AND NextDate.REC_STATUS        = 'A'
+		AND NextDate.GROUP_NAME        = 'PS_SCHED_BL'
+		AND NextDate.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND NextDate.COLUMN_NAME       = 'Next Pickup'
+		AND NextDate.ROW_INDEX         = ServiceZone.ROW_INDEX
+	LEFT OUTER JOIN BAPPSPECTABLE_VALUE Week1
+		ON Week1.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND Week1.B1_PER_ID1        = WO.B1_PER_ID1
+		AND Week1.B1_PER_ID2        = WO.B1_PER_ID2
+		AND Week1.B1_PER_ID3        = WO.B1_PER_ID3
+		AND Week1.REC_STATUS        = 'A'
+		AND Week1.GROUP_NAME        = 'PS_SCHED_BL'
+		AND Week1.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND Week1.COLUMN_NAME       = 'Week 1'
+		AND Week1.ROW_INDEX         = ServiceZone.ROW_INDEX
+	LEFT OUTER JOIN BAPPSPECTABLE_VALUE Week2
+		ON Week2.SERV_PROV_CODE    = WO.SERV_PROV_CODE
+		AND Week2.B1_PER_ID1        = WO.B1_PER_ID1
+		AND Week2.B1_PER_ID2        = WO.B1_PER_ID2
+		AND Week2.B1_PER_ID3        = WO.B1_PER_ID3
+		AND Week2.REC_STATUS        = 'A'
+		AND Week2.GROUP_NAME        = 'PS_SCHED_BL'
+		AND Week2.TABLE_NAME        = 'BRUSH PICKUP SCHEDULE'
+		AND Week2.COLUMN_NAME       = 'Week 2'
+		AND Week2.ROW_INDEX         = ServiceZone.ROW_INDEX
+  WHERE WO.B1_PER_GROUP          = 'AMS'
+  AND WO.B1_PER_TYPE             = 'Miscellaneous'
+  AND WO.B1_PER_SUB_TYPE         = 'Brush and Leaf Schedule'
+  AND wo.b1_per_category         = 'NA'
+  AND WO.REC_STATUS              = 'A'
+)
+--select * from cok_ps_zone_BRUSH_sched_vw
+,COK_PS_STR_BRUSH_SCHED_VW
+
+AS (
+SELECT 
+  a.service_zone,
+  a.street_name ps_str_name,
+    a.street_type ps_str_type,
+    a.block_from ps_blk_from,
+    a.block_to ps_blk_to,
+    b.last_pickup_date,
+    b.next_pickup_date,
+    b.week_1,
+    b.week_2
+  FROM cok_ps_service_zone_streets_vw a
+   JOIN cok_ps_zone_BRUSH_sched_vw b ON b.service_zone = a.service_zone 
+) --select * from COK_PS_STR_BRUSH_SCHED_VW
+SELECT        
+SERVICE_ZONE, 
+PS_STR_NAME, 
+PS_STR_TYPE, 
+PS_BLK_FROM, 
+PS_BLK_TO, 
+LAST_PICKUP_DATE, 
+NEXT_PICKUP_DATE
+FROM COK_PS_STR_BRUSH_SCHED_VW</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="SERVICE_ZONE">
+          <DataField>SERVICE_ZONE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PS_STR_NAME">
+          <DataField>PS_STR_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PS_STR_TYPE">
+          <DataField>PS_STR_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PS_BLK_FROM">
+          <DataField>PS_BLK_FROM</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PS_BLK_TO">
+          <DataField>PS_BLK_TO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LAST_PICKUP_DATE">
+          <DataField>LAST_PICKUP_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="NEXT_PICKUP_DATE">
+          <DataField>NEXT_PICKUP_DATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.00695in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.23611in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.19445in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25695in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.15278in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.15278in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Street</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox3</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>From Street No</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox5</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>To Street No</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox6</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Map Number</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Last Pickup</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Next Pickup</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PS_STR_NAME">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PS_STR_NAME.Value + " " + Fields!PS_STR_TYPE.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PS_STR_NAME</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PS_BLK_FROM">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PS_BLK_FROM.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PS_BLK_FROM</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PS_BLK_TO">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PS_BLK_TO.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PS_BLK_TO</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="SERVICE_ZONE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SERVICE_ZONE.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>SERVICE_ZONE</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LAST_PICKUP_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LAST_PICKUP_DATE.Value</Value>
+                                  <Style>
+                                    <Format>MM/dd/yyyy</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LAST_PICKUP_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="NEXT_PICKUP_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!NEXT_PICKUP_DATE.Value</Value>
+                                  <Style>
+                                    <Format>MM/dd/yyyy</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>NEXT_PICKUP_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!PS_STR_NAME.Value</Value>
+                    </SortExpression>
+                    <SortExpression>
+                      <Value>=Fields!PS_STR_TYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.42in</Height>
+            <Width>8.00002in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.63in</Height>
+        <Style />
+      </Body>
+      <Width>8.00002in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.41667in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox51">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Leaf/Brush Streets</Value>
+                      <Style>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox51</rd:DefaultName>
+              <Left>2.85417in</Left>
+              <Height>0.25in</Height>
+              <Width>1.5625in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://mtprd-ssrs-0.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>8aa77606-f0e9-4b0d-b0ae-49bcae816af8</rd:ReportID>
+</Report>

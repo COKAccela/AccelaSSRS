@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>aec6d714-c189-4ad4-93d7-54a35c7a21a4</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="CostQuantities">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT B1PERMIT.B1_ALT_ID,
+  GWORK_ORDER_COSTING.COST_UNIT_TYPE,
+  GWORK_ORDER_COSTING.COST_ITEM,
+  SUM(
+  CASE
+    WHEN GCOSTING_QUANTITY.COST_FACTOR = '1'
+    THEN GCOSTING_QUANTITY.COST_QUANTITY
+  END) AS RegularHours,
+  SUM(
+  CASE
+    WHEN GCOSTING_QUANTITY.COST_FACTOR = '1.5'
+    THEN GCOSTING_QUANTITY.COST_QUANTITY
+  END) AS OTHours,
+ SUM(
+  CASE
+    WHEN GCOSTING_QUANTITY.COST_FACTOR = '2'
+    THEN GCOSTING_QUANTITY.COST_QUANTITY
+  END) AS DoubleHours
+FROM GWORK_ORDER_COSTING,
+  B1PERMIT,
+  GCOSTING_QUANTITY
+WHERE GWORK_ORDER_COSTING.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE
+AND GWORK_ORDER_COSTING.B1_PER_ID1       = B1PERMIT.B1_PER_ID1
+AND GWORK_ORDER_COSTING.B1_PER_ID2       = B1PERMIT.B1_PER_ID2
+AND GWORK_ORDER_COSTING.B1_PER_ID3       = B1PERMIT.B1_PER_ID3
+AND GWORK_ORDER_COSTING.SERV_PROV_CODE   = GCOSTING_QUANTITY.SERV_PROV_CODE
+AND GWORK_ORDER_COSTING.B1_PER_ID1       = GCOSTING_QUANTITY.B1_PER_ID1
+AND GWORK_ORDER_COSTING.B1_PER_ID2       = GCOSTING_QUANTITY.B1_PER_ID2
+AND GWORK_ORDER_COSTING.B1_PER_ID3       = GCOSTING_QUANTITY.B1_PER_ID3
+AND GWORK_ORDER_COSTING.COST_SEQ_NBR     = GCOSTING_QUANTITY.ENTITY_ID
+AND B1PERMIT.B1_ALT_ID                   = convert(varchar,(@ID))
+AND GWORK_ORDER_COSTING.COST_UNIT_TYPE   = 'Hours'
+  AND B1PERMIT.SERV_PROV_CODE  = 'KNOXVILLE'
+GROUP BY B1PERMIT.B1_ALT_ID,
+  GWORK_ORDER_COSTING.COST_UNIT_TYPE,
+  GWORK_ORDER_COSTING.COST_ITEM</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>B1_ALT_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COST_UNIT_TYPE">
+          <DataField>COST_UNIT_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COST_ITEM">
+          <DataField>COST_ITEM</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="REGULARHOURS">
+          <DataField>RegularHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="OTHOURS">
+          <DataField>OTHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="DOUBLEHOURS">
+          <DataField>DoubleHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.14958in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.59375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>1.77083in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Image Name="Image1">
+                          <Source>Embedded</Source>
+                          <Value>Grid3</Value>
+                          <Sizing>Fit</Sizing>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Image>
+                        <ColSpan>2</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.23542in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Hours</Value>
+                                  <Style>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!REGULARHOURS.Value, "CostQuantities")+Sum(Fields!OTHOURS.Value, "CostQuantities")+Sum(Fields!DOUBLEHOURS.Value, "CostQuantities")</Value>
+                                  <Style>
+                                    <FontSize>12pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Total Hours</Value>
+                                  <Style>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox6</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!REGULARHOURS.Value, "CostQuantities")+Sum(Fields!OTHOURS.Value, "CostQuantities")+Sum(Fields!DOUBLEHOURS.Value, "CostQuantities")</Value>
+                                  <Style>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="B1_ALT_ID">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_ALT_ID.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_ALT_ID.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.03125in</Size>
+                    <CellContents>
+                      <Textbox Name="B1_ALT_ID">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value />
+                                <Style>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>B1_ALT_ID</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>true</Hidden>
+                        </Visibility>
+                        <Style>
+                          <Border>
+                            <Style>None</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="table1_Details_Group">
+                        <DataElementName>Detail</DataElementName>
+                      </Group>
+                      <TablixMembers>
+                        <TablixMember>
+                          <Visibility>
+                            <Hidden>=ReportItems!Textbox1.Value &gt; 1</Hidden>
+                          </Visibility>
+                        </TablixMember>
+                        <TablixMember />
+                      </TablixMembers>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <DataElementName>Detail_Collection</DataElementName>
+                      <DataElementOutput>Output</DataElementOutput>
+                      <KeepTogether>true</KeepTogether>
+                    </TablixMember>
+                    <TablixMember>
+                      <KeepWithGroup>Before</KeepWithGroup>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>CostQuantities</DataSetName>
+            <Height>2.25625in</Height>
+            <Width>3.77458in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>2.25625in</Height>
+        <Style />
+      </Body>
+      <Width>3.77458in</Width>
+      <Page>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <Prompt>ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="Grid3">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>654c3bb8-d4d9-4ab5-85da-b81435ad2512</rd:ReportID>
+</Report>

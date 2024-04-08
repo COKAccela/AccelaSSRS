@@ -1,0 +1,728 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>a1692ef2-4539-4804-9e9d-0f62cbb04b2b</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@startdate">
+            <Value>=Parameters!startdate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@enddate">
+            <Value>=Parameters!enddate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH CTE_v_standard_choice
+
+AS
+(
+SELECT 
+--DECODE(A.VALUE_, 'TNPS', 3, 'KPD/311 Investigation',4,'Road Closures',5, 1) SECTION,
+CASE A.VALUE_ 
+   WHEN 'TNPS' THEN 3
+   WHEN 'KPD/311 Investigation' THEN 4
+   WHEN 'Road Closures' THEN 5
+   ELSE 1
+END SECTION,
+
+a.VALUE_ MUTCDTYPE, 
+--CASE WHEN b.VALUE_ = 'Total' THEN '%' ELSE b.VALUE_ END Action
+b.VALUE_  Action
+FROM
+v_standard_choice a,
+v_standard_choice b
+where
+A.ITEM_NAME = 'COK_MUTCD_TYPE' and
+b.ITEM_NAME = 'COK_SIGN_ACTIONS'  
+and b.VALUE_ &lt;&gt; 'Total'
+AND A.AGENCY_ID='KNOXVILLE'
+UNION
+select 2 SECTION, 'Posts' MUTCDTYPE,
+--CASE WHEN b.VALUE_ = 'Total' THEN '%' ELSE b.VALUE_ END Action
+b.VALUE_ Action
+FROM
+v_standard_choice b
+where
+b.ITEM_NAME = 'COK_SIGN_ACTIONS'  
+and b.VALUE_ &lt;&gt; 'Total'
+AND B.AGENCY_ID='KNOXVILLE'
+),
+CTE_B1PERMIT AS (
+  SELECT
+    WO.B1_ALT_ID,
+    WO.SERV_PROV_CODE,
+    WO.B1_PER_ID1,
+    WO.B1_PER_ID2,
+    WO.B1_PER_ID3
+  FROM B1PERMIT WO
+  WHERE
+    WO.B1_PER_GROUP = 'AMS'
+    AND WO.B1_PER_TYPE = 'Work Order'
+    AND WO.B1_PER_SUB_TYPE = 'Traffic Engineering'
+    AND WO.B1_PER_CATEGORY = 'Sign'
+    AND WO.REC_STATUS = 'A'
+	AND WO.SERV_PROV_CODE='KNOXVILLE'
+),
+CTE_BAPPSPECTABLE AS (
+  SELECT
+    T.ATTRIBUTE_VALUE,
+    T.SERV_PROV_CODE,
+    T.B1_PER_ID1,
+    T.B1_PER_ID2,
+    T.B1_PER_ID3,
+    T.GROUP_NAME,
+    T.TABLE_NAME,
+    T.COLUMN_NAME,
+    T.ROW_INDEX
+  FROM BAPPSPECTABLE_VALUE T
+  WHERE
+    T.REC_STATUS = 'A'
+    AND T.GROUP_NAME = 'WOTESIGN'
+    AND T.TABLE_NAME = 'WORK ORDER SIGNS INSTALLED'
+	AND T.SERV_PROV_CODE='KNOXVILLE'
+),
+CTE_BAPPSPECTABLE_POST AS (
+  SELECT
+    T.ATTRIBUTE_VALUE,
+    T.SERV_PROV_CODE,
+    T.B1_PER_ID1,
+    T.B1_PER_ID2,
+    T.B1_PER_ID3,
+    T.GROUP_NAME,
+    T.TABLE_NAME,
+    T.COLUMN_NAME,
+    T.ROW_INDEX
+  FROM BAPPSPECTABLE_VALUE T
+  WHERE
+    T.REC_STATUS = 'A'
+    AND T.GROUP_NAME = 'WOTESIGN'
+    AND T.TABLE_NAME = 'WORK ORDER POSTS INSTALLED'
+	AND T.SERV_PROV_CODE='KNOXVILLE'
+),
+COK_WO_SIGN_SIGNS_INSTALLED AS (
+  SELECT
+    BP.B1_ALT_ID,
+    BP.SERV_PROV_CODE,
+    BP.B1_PER_ID1,
+    BP.B1_PER_ID2,
+    BP.B1_PER_ID3,
+    MUTCDType.ATTRIBUTE_VALUE AS MUTCDType,
+    ISNULL(Sign.ATTRIBUTE_VALUE,'') AS [SIGN],
+    SignDate.ATTRIBUTE_VALUE AS SignDate,
+    Post.ATTRIBUTE_VALUE AS Post,
+    Quantity.ATTRIBUTE_VALUE AS Quantity
+  FROM CTE_B1PERMIT BP
+  JOIN CTE_BAPPSPECTABLE Sign ON
+    Sign.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND Sign.B1_PER_ID1 = BP.B1_PER_ID1
+    AND Sign.B1_PER_ID2 = BP.B1_PER_ID2
+    AND Sign.B1_PER_ID3 = BP.B1_PER_ID3
+    AND Sign.COLUMN_NAME = 'Sign'
+  JOIN CTE_BAPPSPECTABLE SignDate ON
+    SignDate.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND SignDate.B1_PER_ID1 = BP.B1_PER_ID1
+    AND SignDate.B1_PER_ID2 = BP.B1_PER_ID2
+    AND SignDate.B1_PER_ID3 = BP.B1_PER_ID3
+    AND SignDate.COLUMN_NAME = 'Sign Date'
+    AND SignDate.ROW_INDEX = Sign.ROW_INDEX
+  JOIN CTE_BAPPSPECTABLE Post ON
+    Post.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND Post.B1_PER_ID1 = BP.B1_PER_ID1
+    AND Post.B1_PER_ID2 = BP.B1_PER_ID2
+    AND Post.B1_PER_ID3 = BP.B1_PER_ID3
+    AND Post.COLUMN_NAME = 'Post'
+    AND Post.ROW_INDEX = Sign.ROW_INDEX
+  JOIN CTE_BAPPSPECTABLE Quantity ON
+    Quantity.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND Quantity.B1_PER_ID1 = BP.B1_PER_ID1
+    AND Quantity.B1_PER_ID2 = BP.B1_PER_ID2
+    AND Quantity.B1_PER_ID3 = BP.B1_PER_ID3
+    AND Quantity.COLUMN_NAME = 'Quantity'
+    AND Quantity.ROW_INDEX = Sign.ROW_INDEX
+  JOIN CTE_BAPPSPECTABLE MUTCDType ON
+    MUTCDType.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND MUTCDType.B1_PER_ID1 = BP.B1_PER_ID1
+    AND MUTCDType.B1_PER_ID2 = BP.B1_PER_ID2
+    AND MUTCDType.B1_PER_ID3 = BP.B1_PER_ID3
+    AND MUTCDType.COLUMN_NAME = 'MUTCD Type'
+    AND MUTCDType.ROW_INDEX = Sign.ROW_INDEX
+--WHERE TRY_CONVERT(DATE,(SignDate.ATTRIBUTE_VALUE),101) between @p_date_from and @p_date_to
+) ,
+COK_WO_SIGN_POSTS_INSTALLED AS (
+  SELECT
+    BP.B1_ALT_ID,
+    BP.SERV_PROV_CODE,
+    BP.B1_PER_ID1,
+    BP.B1_PER_ID2,
+    BP.B1_PER_ID3,
+    Action.ATTRIBUTE_VALUE AS Action,
+    PostQuantity.ATTRIBUTE_VALUE AS PostQuantity,
+    PostType.ATTRIBUTE_VALUE AS PostType,
+    PostDate.ATTRIBUTE_VALUE AS PostDate
+  FROM CTE_B1PERMIT  BP
+  JOIN CTE_BAPPSPECTABLE_POST  Action ON
+    Action.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND Action.B1_PER_ID1 = BP.B1_PER_ID1
+    AND Action.B1_PER_ID2 = BP.B1_PER_ID2
+    AND Action.B1_PER_ID3 = BP.B1_PER_ID3
+    AND Action.COLUMN_NAME = 'Action'
+  JOIN CTE_BAPPSPECTABLE_POST  PostQuantity ON
+    PostQuantity.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND PostQuantity.B1_PER_ID1 = BP.B1_PER_ID1
+    AND PostQuantity.B1_PER_ID2 = BP.B1_PER_ID2
+    AND PostQuantity.B1_PER_ID3 = BP.B1_PER_ID3
+    AND PostQuantity.COLUMN_NAME = 'Post Quantity'
+    AND PostQuantity.ROW_INDEX = Action.ROW_INDEX
+  JOIN CTE_BAPPSPECTABLE_POST  PostType ON
+    PostType.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND PostType.B1_PER_ID1 = BP.B1_PER_ID1
+    AND PostType.B1_PER_ID2 = BP.B1_PER_ID2
+    AND PostType.B1_PER_ID3 = BP.B1_PER_ID3
+    AND PostType.COLUMN_NAME = 'Post Type'
+    AND PostType.ROW_INDEX = Action.ROW_INDEX
+  JOIN CTE_BAPPSPECTABLE_POST  PostDate ON
+    PostDate.SERV_PROV_CODE = BP.SERV_PROV_CODE
+    AND PostDate.B1_PER_ID1 = BP.B1_PER_ID1
+    AND PostDate.B1_PER_ID2 = BP.B1_PER_ID2
+    AND PostDate.B1_PER_ID3 = BP.B1_PER_ID3
+    AND PostDate.COLUMN_NAME = 'Post Date'
+    AND PostDate.ROW_INDEX = Action.ROW_INDEX
+--WHERE TRY_CONVERT(DATE,PostDate.ATTRIBUTE_VALUE,101) between @p_date_from and @p_date_to
+)
+
+
+select  CTE.Action,
+CTE.MUTCDTYPE,
+CTE.SECTION,  
+sum(isnull(CONVERT(float,S.QUANTITY),0)) AS QUANTITY 
+          
+from COK_WO_SIGN_SIGNS_INSTALLED S
+	right join CTE_v_standard_choice CTE
+     
+on  S.MUTCDTYPE = CTE.MUTCDTYPE
+        
+AND S.[SIGN] LIKE CTE.Action 
+       
+and S.SIGNDATE IS NOT NULL
+        
+and CONVERT(DATE,(S.SIGNDATE),101) between @startdate and @enddate
+		
+AND CTE.MUTCDTYPE &lt;&gt; 'Posts'
+		
+GROUP BY CTE.Action,CTE.MUTCDTYPE,CTE.SECTION
+
+
+
+UNION  
+
+ 
+select CTE.Action,
+CTE.MUTCDTYPE,
+CTE.SECTION, 
+sum(isnull(CONVERT(float,S.POSTQUANTITY),0)) AS QUANTITY 
+          
+from COK_WO_SIGN_POSTS_INSTALLED S
+	right join CTE_v_standard_choice CTE
+     
+on 
+	S.Action LIKE CTE.Action
+        
+and S.POSTDATE IS NOT NULL
+        
+and CONVERT(DATE,S.POSTDATE,101) between @startdate and @enddate
+		
+AND CTE.MUTCDTYPE = 'Posts'
+		
+GROUP BY CTE.Action,CTE.MUTCDTYPE,CTE.SECTION</CommandText>
+        <Timeout>10</Timeout>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="SECTION">
+          <DataField>SECTION</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="MUTCDTYPE">
+          <DataField>MUTCDTYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ACTION">
+          <DataField>Action</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QUANTITY">
+          <DataField>QUANTITY</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="matrix1">
+            <TablixCorner>
+              <TablixCornerRows>
+                <TablixCornerRow>
+                  <TablixCornerCell>
+                    <CellContents>
+                      <Textbox Name="textbox3">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value />
+                                <Style>
+                                  <FontSize>9pt</FontSize>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>textbox3</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixCornerCell>
+                </TablixCornerRow>
+              </TablixCornerRows>
+            </TablixCorner>
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.96875in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.31417in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=SUM(Fields!QUANTITY.Value)</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!QUANTITY.Value)</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox6</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.29167in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!QUANTITY.Value)</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Double</Style>
+                              <Width>1.5pt</Width>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="QUANTITY">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!QUANTITY.Value)</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>QUANTITY</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Double</Style>
+                              <Width>1.5pt</Width>
+                            </Border>
+                            <BackgroundColor>LightGrey</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_ACTION">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!ACTION.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!ACTION.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="ACTION">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!ACTION.Value</Value>
+                                <Style>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>ACTION</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox1">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Total</Value>
+                                <Style>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox1</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_MUTCDTYPE">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!MUTCDTYPE.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!MUTCDTYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>1.05208in</Size>
+                    <CellContents>
+                      <Textbox Name="MUTCDTYPE">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!MUTCDTYPE.Value</Value>
+                                <Style>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>MUTCDTYPE</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!MUTCDTYPE.Value = "TNPS") OR (Fields!MUTCDTYPE.Value = "KPD/311 Investigation") OR (Fields!MUTCDTYPE.Value = "Road Closures"),TRUE,FALSE)</Hidden>
+                  </Visibility>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.05208in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox4">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Total</Value>
+                                <Style>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Left</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox4</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.81584in</Height>
+            <Width>3.02083in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.85917in</Height>
+        <Style />
+      </Body>
+      <Width>10.10069in</Width>
+      <Page>
+        <PageHeight>8.5in</PageHeight>
+        <PageWidth>11in</PageWidth>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="startdate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>06/01/2017 00:00:00</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Start Date</Prompt>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
+    </ReportParameter>
+    <ReportParameter Name="enddate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>06/30/2017 00:00:00</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>End Date</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>startdate</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>enddate</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>b20f54b0-55bc-4fd6-9131-76cfec6f26eb</rd:ReportID>
+</Report>

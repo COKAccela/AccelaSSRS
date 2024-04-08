@@ -1,0 +1,615 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>c0974fee-921b-4a42-8785-7c9fd049d874</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@WO_NUM">
+            <Value>=Parameters!WO_NUM.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@TASK">
+            <Value>=Parameters!TASK.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT BAPPSPECTABLE_VALUE.ATTRIBUTE_VALUE AS Task, BAPPSPECTABLE_VALUE_1.ATTRIBUTE_VALUE AS TicketNumber, 
+BAPPSPECTABLE_VALUE_2.ATTRIBUTE_VALUE AS Pounds, BAPPSPECTABLE_VALUE_3.ATTRIBUTE_VALUE AS Weight_Unit, 
+BAPPSPECTABLE_VALUE_4.COLUMN_NAME, BAPPSPECTABLE_VALUE_4.ATTRIBUTE_VALUE AS Quantity, 
+BAPPSPECTABLE_VALUE_5.ATTRIBUTE_VALUE AS TruckNumber
+FROM dbo.BAPPSPECTABLE_VALUE RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_1 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_1.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_1.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_1.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_1.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_1.GROUP_NAME AND
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_1.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_2 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_2.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_2.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_2.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_2.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_2.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_2.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_3 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_3.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_3.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_3.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_3.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_3.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_3.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_4 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_4.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_4.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_4.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_4.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_4.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_4.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_5 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_5.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_5.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_5.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_5.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_5.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_5.ROW_INDEX
+RIGHT OUTER JOIN dbo.B1PERMIT ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = B1PERMIT.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = B1PERMIT.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = B1PERMIT.B1_PER_ID3
+WHERE  B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE' AND   
+(B1PERMIT.B1_ALT_ID = @WO_NUM) AND 
+(BAPPSPECTABLE_VALUE.GROUP_NAME = 'WO_APU') AND 
+(BAPPSPECTABLE_VALUE.TABLE_NAME = 'ACTUAL PRODUCTION UNITS') AND (BAPPSPECTABLE_VALUE.COLUMN_NAME = 'Task') AND 
+(BAPPSPECTABLE_VALUE.ATTRIBUTE_VALUE = @TASK) AND 
+(BAPPSPECTABLE_VALUE_1.COLUMN_NAME = 'Ticket Number') AND 
+(BAPPSPECTABLE_VALUE_2.COLUMN_NAME = 'Weight') AND (BAPPSPECTABLE_VALUE_3.COLUMN_NAME = 'Weight Unit') AND 
+(BAPPSPECTABLE_VALUE_4.COLUMN_NAME = 'Quantity') AND (BAPPSPECTABLE_VALUE_5.COLUMN_NAME = 'Truck Number')</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="TASK">
+          <DataField>Task</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TICKETNUMBER">
+          <DataField>TicketNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="POUNDS">
+          <DataField>Pounds</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QUANTITY">
+          <DataField>Quantity</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="WEIGHT_UNIT">
+          <DataField>Weight_Unit</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COLUMN_NAME">
+          <DataField>COLUMN_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TRUCKNUMBER">
+          <DataField>TruckNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Test">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@WO_NUM">
+            <Value>=Parameters!WO_NUM.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@TASK">
+            <Value>=Parameters!TASK.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT     BAPPSPECTABLE_VALUE.ATTRIBUTE_VALUE AS Task, BAPPSPECTABLE_VALUE_1.ATTRIBUTE_VALUE AS TicketNumber, 
+BAPPSPECTABLE_VALUE_2.ATTRIBUTE_VALUE AS Pounds, BAPPSPECTABLE_VALUE_3.ATTRIBUTE_VALUE AS Weight_Unit, 
+BAPPSPECTABLE_VALUE_4.COLUMN_NAME, BAPPSPECTABLE_VALUE_4.ATTRIBUTE_VALUE AS Quantity, 
+BAPPSPECTABLE_VALUE_5.ATTRIBUTE_VALUE AS TruckNumber
+FROM dbo.BAPPSPECTABLE_VALUE RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_1 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_1.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_1.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_1.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_1.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_1.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_1.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_2 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_2.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_2.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_2.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_2.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_2.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_2.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_3 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_3.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_3.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_3.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_3.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_3.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_3.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_4 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_4.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_4.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_4.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_4.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_4.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_4.ROW_INDEX
+RIGHT OUTER JOIN dbo.BAPPSPECTABLE_VALUE BAPPSPECTABLE_VALUE_5 ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = BAPPSPECTABLE_VALUE_5.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = BAPPSPECTABLE_VALUE_5.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = BAPPSPECTABLE_VALUE_5.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = BAPPSPECTABLE_VALUE_5.B1_PER_ID3 AND 
+BAPPSPECTABLE_VALUE.GROUP_NAME = BAPPSPECTABLE_VALUE_5.GROUP_NAME AND                       
+BAPPSPECTABLE_VALUE.ROW_INDEX = BAPPSPECTABLE_VALUE_5.ROW_INDEX
+RIGHT OUTER JOIN dbo.B1PERMIT ON
+BAPPSPECTABLE_VALUE.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID1 = B1PERMIT.B1_PER_ID1 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID2 = B1PERMIT.B1_PER_ID2 AND 
+BAPPSPECTABLE_VALUE.B1_PER_ID3 = B1PERMIT.B1_PER_ID3
+WHERE B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE' AND (B1PERMIT.B1_ALT_ID = @WO_NUM) AND 
+(BAPPSPECTABLE_VALUE.GROUP_NAME = 'WO_APU') AND 
+(BAPPSPECTABLE_VALUE.TABLE_NAME = 'ACTUAL PRODUCTION UNITS') AND (BAPPSPECTABLE_VALUE.COLUMN_NAME = 'Task') AND 
+(BAPPSPECTABLE_VALUE.ATTRIBUTE_VALUE = @TASK) AND (BAPPSPECTABLE_VALUE_1.COLUMN_NAME = 'Ticket Number') AND 
+(BAPPSPECTABLE_VALUE_2.COLUMN_NAME = 'Weight') AND (BAPPSPECTABLE_VALUE_3.COLUMN_NAME = 'Weight Unit') AND 
+(BAPPSPECTABLE_VALUE_4.COLUMN_NAME = 'Quantity') AND (BAPPSPECTABLE_VALUE_5.COLUMN_NAME = 'Truck Number')</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="TASK">
+          <DataField>Task</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TICKETNUMBER">
+          <DataField>TicketNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="POUNDS">
+          <DataField>Pounds</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="WEIGHT_UNIT">
+          <DataField>Weight_Unit</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COLUMN_NAME">
+          <DataField>COLUMN_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QUANTITY">
+          <DataField>Quantity</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TRUCKNUMBER">
+          <DataField>TruckNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.76042in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.76042in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.92708in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Ticket #</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Truck#</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox6</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox15">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Quantity</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Weight</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Weight Unit</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox1</rd:DefaultName>
+                          <ZIndex>1</ZIndex>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TICKETNUMBER.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TRUCKNUMBER">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TRUCKNUMBER.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>TRUCKNUMBER</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="QUANTITY">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!QUANTITY.Value</Value>
+                                  <Style>
+                                    <Format>#,0.00;(#,0.00)</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>QUANTITY</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="POUNDS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!POUNDS.Value</Value>
+                                  <Style>
+                                    <Format>#,0;(#,0)</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>POUNDS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="WEIGHT_UNIT">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!WEIGHT_UNIT.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>WEIGHT_UNIT</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.46in</Height>
+            <Width>4.44792in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.4825in</Height>
+        <Style />
+      </Body>
+      <Width>4.44792in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="WO_NUM">
+      <DataType>String</DataType>
+      <Prompt>WO NUM</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="TASK">
+      <DataType>String</DataType>
+      <Prompt>TASK</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>WO_NUM</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>TASK</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>f725dd22-94fe-4a22-96f3-5e65df63c28b</rd:ReportID>
+</Report>

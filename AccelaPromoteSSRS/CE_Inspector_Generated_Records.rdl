@@ -1,0 +1,2433 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>8322d7a3-15d2-451c-b42f-876df4dabea7</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@beg_date">
+            <Value>=Parameters!beg_date.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@end_date">
+            <Value>=Parameters!end_date.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select a.b1_alt_id, 1 as created_count,
+  a.b1_initiated_by_product, 
+   case
+      when a.b1_initiated_by_product in ('CodeOfficer', 'AV360') then a.b1_created_by
+      when a.b1_initiated_by_product = 'EMSE' then '311'
+      when a.b1_initiated_by_product = 'ACA' then 'Citizen'
+      else 'OTHER'
+   end as initiated_by,  
+  a.b1_per_sub_type, a.rec_date, a.b1_file_dd, a.b1_appl_status_date, a.b1_created_by
+from dbo.b1permit a
+where
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy') 
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101)
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022'
+and trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+and a.b1_initiated_by_product in ('CodeOfficer', 'AV360') 
+order by b1_created_by, b1_per_sub_type</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CREATED_COUNT">
+          <DataField>created_count</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="INITIATED_BY">
+          <DataField>initiated_by</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_SUB_TYPE">
+          <DataField>b1_per_sub_type</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_INITIATED_BY_PRODUCT">
+          <DataField>b1_initiated_by_product</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="REC_DATE">
+          <DataField>rec_date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_FILE_DD">
+          <DataField>b1_file_dd</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_APPL_STATUS_DATE">
+          <DataField>b1_appl_status_date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_CREATED_BY">
+          <DataField>b1_created_by</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="OtherAnd311">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@beg_date">
+            <Value>=Parameters!beg_date.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@end_date">
+            <Value>=Parameters!end_date.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select 
+'' b1_alt_id, 
+sum(0) created_count, 
+'' b1_initiated_by_product, 
+'OTHER' initiated_by, 
+a.b1_per_sub_type, 
+null rec_date, 
+null b1_file_dd, 
+null b1_appl_status_date, 
+null b1_created_by
+from dbo.b1permit a
+where
+--a.rec_date between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy') and 
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022' and
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101) and
+trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+group by a.b1_per_sub_type
+union
+select a.b1_alt_id, 1 as created_count,
+  a.b1_initiated_by_product, 
+   case
+      when a.b1_initiated_by_product in ('CodeOfficer', 'AV360') then a.b1_created_by
+      when a.b1_initiated_by_product = 'EMSE' then '311'
+      when a.b1_initiated_by_product = 'ACA' then 'Citizen'
+      else 'OTHER'
+   end as initiated_by,  
+  a.b1_per_sub_type, a.rec_date, a.b1_file_dd, a.b1_appl_status_date, a.b1_created_by
+from dbo.b1permit a
+where
+--a.rec_date between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy') and
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022' and
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101) and
+trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+and (a.b1_initiated_by_product not in ('CodeOfficer', 'AV360') or a.b1_initiated_by_product is null)
+--and a.b1_initiated_by_product not in ('CodeOfficer', 'AV360') 
+--order by b1_created_by, b1_per_sub_type
+order by initiated_by, b1_per_sub_type</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CREATED_COUNT">
+          <DataField>created_count</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="B1_INITIATED_BY_PRODUCT">
+          <DataField>b1_initiated_by_product</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="INITIATED_BY">
+          <DataField>initiated_by</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="REC_DATE">
+          <DataField>rec_date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_FILE_DD">
+          <DataField>b1_file_dd</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_SUB_TYPE">
+          <DataField>b1_per_sub_type</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_APPL_STATUS_DATE">
+          <DataField>b1_appl_status_date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="B1_CREATED_BY">
+          <DataField>b1_created_by</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="TotalAllRecords">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@beg_date">
+            <Value>=Parameters!beg_date.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@end_date">
+            <Value>=Parameters!end_date.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT count(a.b1_alt_id) AS tot_gend
+FROM dbo.b1permit a
+where 
+--a.rec_date between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101) and
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022' and
+trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+--and a.b1_initiated_by_product is not null</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="TOT_GEND">
+          <DataField>tot_gend</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet3">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@beg_date">
+            <Value>=Parameters!beg_date.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@end_date">
+            <Value>=Parameters!end_date.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select count(a.b1_alt_id) tot_insp_gend
+from dbo.b1permit a
+where
+--a.rec_date between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022' and 
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101) and 
+trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+and a.b1_initiated_by_product in ('CodeOfficer', 'AV360') </CommandText>
+      </Query>
+      <Fields>
+        <Field Name="TOT_INSP_GEND">
+          <DataField>tot_insp_gend</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="TotalsRow">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@beg_date">
+            <Value>=Parameters!beg_date.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@end_date">
+            <Value>=Parameters!end_date.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select a.b1_alt_id, 1 as created_count, a.b1_per_sub_type,
+   case
+      when a.b1_initiated_by_product in ('CodeOfficer', 'AV360') then 'Percent Created by CE Staff'
+      else 'Percent Created by Others'
+   end as initiated_by
+from dbo.b1permit a
+where
+--a.rec_date between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.b1_file_dd between to_date(:beg_date, 'mm/dd/yyyy') and to_date(:end_date, 'mm/dd/yyyy')
+--a.B1_FILE_DD between '05/01/2021' and '05/01/2022' and
+a.B1_FILE_DD between convert(varchar,@beg_date,101) and convert(varchar,@end_date,101) and 
+trim(a.b1_per_type) = 'CODES ENFORCEMENT'  
+and a.rec_status = 'A' and a.SERV_PROV_CODE ='KNOXVILLE'
+order by initiated_by</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CREATED_COUNT">
+          <DataField>created_count</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="INITIATED_BY">
+          <DataField>initiated_by</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_SUB_TYPE">
+          <DataField>b1_per_sub_type</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="matrix1">
+            <TablixCorner>
+              <TablixCornerRows>
+                <TablixCornerRow>
+                  <TablixCornerCell>
+                    <CellContents>
+                      <Textbox Name="textbox3">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Created by CE Staff</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>textbox3</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixCornerCell>
+                </TablixCornerRow>
+              </TablixCornerRows>
+            </TablixCorner>
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.04167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.90625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=iif(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value, "matrix1_INITIATED_BY")/Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CETotalPerSubType">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Label>CETotalPerSubType</Label>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalCreatedByCEStaff">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=iif(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!TOT_INSP_GEND.Value, "DataSet3")/Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_B1_PER_SUB_TYPE">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_PER_SUB_TYPE.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="B1_PER_SUB_TYPE">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>B1_PER_SUB_TYPE</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox4">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>TOTAL </Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox4</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox13">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>% OF TOTAL COMPLAINTS</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox4</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_INITIATED_BY">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!INITIATED_BY.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!INITIATED_BY.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="INITIATED_BY">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!INITIATED_BY.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>INITIATED_BY</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox6">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Total Created by CE</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox6</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.06944in</Top>
+            <Left>0.18994in</Left>
+            <Height>0.67in</Height>
+            <Width>4.64583in</Width>
+            <Style />
+          </Tablix>
+          <Tablix Name="matrix2">
+            <TablixCorner>
+              <TablixCornerRows>
+                <TablixCornerRow>
+                  <TablixCornerCell>
+                    <CellContents>
+                      <Textbox Name="textbox6">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Created by Others</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>textbox3</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixCornerCell>
+                </TablixCornerRow>
+              </TablixCornerRows>
+            </TablixCorner>
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.04167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.90625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox19">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox20">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=iif(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value, "matrix1_INITIATED_BY2")/Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox21">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox22">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox28">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(Sum(Fields!TOT_GEND.Value, "TotalAllRecords")= 0, 0, Sum(Fields!CREATED_COUNT.Value) / Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_B1_PER_SUB_TYPE2">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_PER_SUB_TYPE.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="B1_PER_SUB_TYPE2">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>B1_PER_SUB_TYPE</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox14">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>TOTAL </Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox4</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.21in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox15">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>% OF TOTAL COMPLAINTS</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox4</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_INITIATED_BY2">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!INITIATED_BY.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!INITIATED_BY.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="INITIATED_BY2">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!INITIATED_BY.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>INITIATED_BY</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox18">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Total Created by Others</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox6</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>OtherAnd311</DataSetName>
+            <Top>0.8525in</Top>
+            <Left>0.18994in</Left>
+            <Height>0.67in</Height>
+            <Width>4.64583in</Width>
+            <ZIndex>1</ZIndex>
+            <Style />
+          </Tablix>
+          <Tablix Name="matrix3">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.04167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.90625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox26">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox27">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Microsoft.VisualBasic.Interaction.iif(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value, "matrix1_INITIATED_BY3") / Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalPerSubType">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Label>TotalPerSubType</Label>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox30">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox31">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Microsoft.VisualBasic.Interaction.IIF(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value) / Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_B1_PER_SUB_TYPE3">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_PER_SUB_TYPE.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_INITIATED_BY3">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!INITIATED_BY.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!INITIATED_BY.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="INITIATED_BY3">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!INITIATED_BY.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>INITIATED_BY</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox25">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>TOTAL COMPLAINTS</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox6</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>TotalsRow</DataSetName>
+            <Top>2.46694in</Top>
+            <Left>0.18994in</Left>
+            <Height>0.46in</Height>
+            <Width>4.64583in</Width>
+            <ZIndex>2</ZIndex>
+            <Visibility>
+              <Hidden>true</Hidden>
+            </Visibility>
+            <Style />
+          </Tablix>
+          <Tablix Name="matrix4">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.04167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.90625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.9375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.20833in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="B1_PER_SUB_TYPE1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>B1_PER_SUB_TYPE1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#60759b</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox109">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>TOTAL</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox109</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#60759b</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox110">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>% OF TOTAL COMPLAINTS</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox110</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#60759b</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)/iif(IsNothing(ReportItems!TotalPerSubType2.Value), 1, ReportItems!TotalPerSubType2.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox32">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox33">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Microsoft.VisualBasic.Interaction.iif(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value, "matrix1_INITIATED_BY4") / Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TotalPerSubType2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Label>Total2PerSubType</Label>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox34">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CREATED_COUNT.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox35">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Microsoft.VisualBasic.Interaction.IIF(Sum(Fields!TOT_GEND.Value, "TotalAllRecords") = 0, 0, Sum(Fields!CREATED_COUNT.Value) / Sum(Fields!TOT_GEND.Value, "TotalAllRecords"))</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>0.0%</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="matrix1_B1_PER_SUB_TYPE4">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_PER_SUB_TYPE.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_PER_SUB_TYPE.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox107">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Totals</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox107</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="matrix1_INITIATED_BY4">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!INITIATED_BY.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!INITIATED_BY.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="INITIATED_BY4">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!INITIATED_BY.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>INITIATED_BY</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.76041in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox29">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>TOTAL COMPLAINTS</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox6</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>TotalsRow</DataSetName>
+            <Top>1.62138in</Top>
+            <Left>0.18994in</Left>
+            <Height>0.66833in</Height>
+            <Width>4.64583in</Width>
+            <ZIndex>3</ZIndex>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>3.05194in</Height>
+        <Style />
+      </Body>
+      <Width>10.09862in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.80556in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox9">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>="Page "&amp;Globals!PageNumber &amp;" of "&amp;Globals!TotalPages</Value>
+                      <Style>
+                        <FontFamily>Times New Roman</FontFamily>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox6</rd:DefaultName>
+              <Top>0.42181in</Top>
+              <Left>8.34749in</Left>
+              <Height>0.26041in</Height>
+              <Width>1.63412in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox16">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Label>ActivitiesOpenedBetween</Label>
+                      <Value>="Records Generated Between:  " &amp; Microsoft.VisualBasic.Interaction.iif(Microsoft.VisualBasic.Information.IsNothing(Parameters!beg_date.Value) = 1, "", Parameters!beg_date.Value) &amp; Microsoft.VisualBasic.Interaction.iif(Microsoft.VisualBasic.Information.IsNothing(Parameters!end_date.Value) = 1, "", " thru " &amp; Parameters!end_date.Value)</Value>
+                      <Style>
+                        <FontStyle>Italic</FontStyle>
+                        <FontFamily>Times New Roman</FontFamily>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox13</rd:DefaultName>
+              <Top>0.46in</Top>
+              <Left>2.5454in</Left>
+              <Height>0.22222in</Height>
+              <Width>4.01954in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="textbox4">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Complaint Record Summary</Value>
+                      <Style>
+                        <FontFamily>Times New Roman</FontFamily>
+                        <FontSize>14pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>textbox1</rd:DefaultName>
+              <Top>0.15972in</Top>
+              <Left>2.5454in</Left>
+              <Height>0.2725in</Height>
+              <Width>4.01954in</Width>
+              <ZIndex>2</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Image Name="Image1">
+              <Source>Embedded</Source>
+              <Value>KnoxDesignHeader</Value>
+              <Sizing>FitProportional</Sizing>
+              <Top>0.04514in</Top>
+              <Left>0.0454in</Left>
+              <Height>0.76042in</Height>
+              <Width>0.9375in</Width>
+              <ZIndex>3</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+              </Style>
+            </Image>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <PageFooter>
+          <Height>0.25in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox10">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Trim(Globals!ReportName)</Value>
+                      <Style>
+                        <FontFamily>Times New Roman</FontFamily>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox6</rd:DefaultName>
+              <Left>5.31548in</Left>
+              <Height>0.17361in</Height>
+              <Width>4.66613in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox11">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=DateAdd("h",1,Globals!ExecutionTime)</Value>
+                      <Style>
+                        <FontFamily>Times New Roman</FontFamily>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Left</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox6</rd:DefaultName>
+              <Top>0.0191in</Top>
+              <Height>0.17361in</Height>
+              <Width>1.42708in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <PageHeight>8.5in</PageHeight>
+        <PageWidth>11in</PageWidth>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="beg_date">
+      <DataType>String</DataType>
+      <Prompt>beg date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="end_date">
+      <DataType>String</DataType>
+      <Prompt>end date</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>beg_date</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>end_date</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="KnoxDesignHeader">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>623c15ff-0c3f-44cc-99db-3ba277607e9b</rd:ReportID>
+</Report>

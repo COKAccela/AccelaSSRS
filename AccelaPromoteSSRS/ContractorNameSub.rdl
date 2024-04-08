@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <ReportItems>
+      <Textbox Name="textbox1">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=Fields!LicHolder.Value</Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>textbox1</rd:DefaultName>
+        <Height>0.1475in</Height>
+        <Width>2.55208in</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <PaddingBottom>2pt</PaddingBottom>
+        </Style>
+      </Textbox>
+    </ReportItems>
+    <Height>0.1475in</Height>
+    <Style />
+  </Body>
+  <Width>2.55208in</Width>
+  <Page>
+    <LeftMargin>1in</LeftMargin>
+    <RightMargin>1in</RightMargin>
+    <TopMargin>1in</TopMargin>
+    <BottomMargin>1in</BottomMargin>
+    <Style />
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="PermitsPlus">
+      <DataSourceReference>PermitsPlus</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>35927c95-5ce6-44d5-942b-ca80af1253d1</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>PermitsPlus</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name=":p_license_no">
+            <Value>=Parameters!p_license_no.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select rtrim(substr(name,1,20))"LicHolder" from dbo.con_peo where 
+substr(rtrim(license_no),1,16) = substr(rtrim(:p_license_no),1,16) and relationship = 'LICHOLDER'</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="LicHolder">
+          <DataField>LicHolder</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportParameters>
+    <ReportParameter Name="p_license_no">
+      <DataType>String</DataType>
+      <Prompt>PassLicenseNo</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>a5c99237-156b-4975-9d64-8a9b47cbf03b</rd:ReportID>
+</Report>
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <ReportItems>
+      <Textbox Name="textbox1">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=Fields!LicHolder.Value</Value>
+                <Style>
+                  <FontSize>8pt</FontSize>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>textbox1</rd:DefaultName>
+        <Height>0.1475in</Height>
+        <Width>2.55208in</Width>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <PaddingBottom>2pt</PaddingBottom>
+        </Style>
+      </Textbox>
+    </ReportItems>
+    <Height>0.1475in</Height>
+    <Style />
+  </Body>
+  <Width>2.55208in</Width>
+  <Page>
+    <LeftMargin>1in</LeftMargin>
+    <RightMargin>1in</RightMargin>
+    <TopMargin>1in</TopMargin>
+    <BottomMargin>1in</BottomMargin>
+    <Style />
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="PermitsPlus">
+      <DataSourceReference>PermitsPlus</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>35927c95-5ce6-44d5-942b-ca80af1253d1</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>PermitsPlus</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name=":p_license_no">
+            <Value>=Parameters!p_license_no.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select rtrim(substr(name,1,20))"LicHolder" from dbo.con_peo where 
+substr(rtrim(license_no),1,16) = substr(rtrim(:p_license_no),1,16) and relationship = 'LICHOLDER'</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="LicHolder">
+          <DataField>LicHolder</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportParameters>
+    <ReportParameter Name="p_license_no">
+      <DataType>String</DataType>
+      <Prompt>PassLicenseNo</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>a5c99237-156b-4975-9d64-8a9b47cbf03b</rd:ReportID>
+</Report>
+
+

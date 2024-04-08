@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>51c64091-9219-4dc3-8b5d-0eef599ce28a</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@startdate">
+            <Value>=Parameters!startdate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@enddate">
+            <Value>=Parameters!enddate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>	SELECT COUNT(a.B1_ALT_ID) AS EXPR1
+	  FROM B1PERMIT a
+		LEFT JOIN bpermit_detail m ON m.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND m.B1_PER_ID1 = a.B1_PER_ID1
+		  AND m.B1_PER_ID2 = a.B1_PER_ID2
+		  AND m.B1_PER_ID3 = a.B1_PER_ID3
+		LEFT JOIN B3ADDRES b ON b.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND b.B1_PER_ID1 = a.B1_PER_ID1
+		  AND b.B1_PER_ID2 = a.B1_PER_ID2
+		  AND b.B1_PER_ID3 = a.B1_PER_ID3
+		LEFT JOIN R3APPTYP c ON c.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND c.R1_PER_GROUP = a.B1_PER_GROUP
+		  AND c.R1_PER_TYPE = a.B1_PER_TYPE
+		  AND c.R1_PER_SUB_TYPE = a.B1_PER_SUB_TYPE
+		  AND c.R1_PER_CATEGORY = a.B1_PER_CATEGORY
+		LEFT JOIN BPERMIT_DETAIL d ON d.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND d.B1_PER_ID1 = a.B1_PER_ID1
+		  AND d.B1_PER_ID2 = a.B1_PER_ID2
+		  AND d.B1_PER_ID3 = a.B1_PER_ID3
+		LEFT JOIN g3dpttyp e ON e.r3_dept_key = d.b1_asgn_dept
+		LEFT JOIN r3bureau f ON f.R3_AGENCY_CODE = e.R3_AGENCY_CODE
+		  AND f.r3_bureau_code = e.r3_bureau_code
+		  AND f.serv_prov_code = e.serv_prov_code
+		LEFT JOIN r3divisn g ON G.R3_AGENCY_CODE = e.R3_AGENCY_CODE
+		  AND G.R3_DIVISION_CODE = E.R3_DIVISION_CODE
+		  AND G.SERV_PROV_CODE = E.SERV_PROV_CODE
+		LEFT JOIN v_related_record h ON h.CHILD_RECORD_ID = a.B1_ALT_ID
+		LEFT JOIN BCHCKBOX councildistrict ON councildistrict.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND councildistrict.B1_PER_ID1 = a.B1_PER_ID1
+		  AND councildistrict.B1_PER_ID2 = a.B1_PER_ID2
+		  AND councildistrict.B1_PER_ID3 = a.B1_PER_ID3
+		  AND councildistrict.B1_CHECKBOX_DESC = 'Council District'
+		LEFT JOIN b3parcel k ON k.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND k.B1_PER_ID1  = a.B1_PER_ID1
+		  AND k.B1_PER_ID2  = a.B1_PER_ID2
+		  AND k.B1_PER_ID3  = a.B1_PER_ID3
+		LEFT JOIN BWORKDES l ON l.SERV_PROV_CODE = a.SERV_PROV_CODE
+		  AND l.B1_PER_ID1 = a.B1_PER_ID1
+		  AND l.B1_PER_ID2 = a.B1_PER_ID2
+		  AND l.B1_PER_ID3 = a.B1_PER_ID3
+	WHERE a.B1_PER_TYPE            = 'Work Order'
+	  AND a.B1_PER_SUB_TYPE          = 'Traffic Engineering'
+	  AND a.B1_Per_Category          = 'Sign'
+	  AND ISNULL(a.B1_APPL_STATUS,'x') &lt;&gt; 'Canceled'
+	  and a.SERV_PROV_CODE='KNOXVILLE'
+	  AND a.B1_APPL_STATUS_DATE BETWEEN @startdate AND @enddate
+	  AND ISNULL(B1_APPL_STATUS,'x') IN ('Completed', 'Closed')</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="EXPR1">
+          <DataField>EXPR1</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.51042in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.92708in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Sign Work Orders Completed: </Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="EXPR1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!EXPR1.Value</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>EXPR1</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>3.4375in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.21in</Height>
+        <Style />
+      </Body>
+      <Width>3.4375in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="startdate">
+      <DataType>DateTime</DataType>
+      <Prompt>startdate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="enddate">
+      <DataType>DateTime</DataType>
+      <Prompt>enddate</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>startdate</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>enddate</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>7fdf93c3-b4da-4af8-969b-f429d2dc9685</rd:ReportID>
+</Report>
