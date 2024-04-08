@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>046502a6-8152-43a9-af48-84d61f54ea02</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@RECORD_ID">
+            <Value>=Parameters!RECORD_ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, UPDATED_BY, 
+  DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from (
+   SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    (CASE 
+        WHEN A.B1_CHECKLIST_COMMENT = 'CHECKED' THEN 'YES'
+        ELSE A.B1_CHECKLIST_COMMENT
+    END) AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.B1_CHECKLIST_COMMENT = 'CHECKED' 
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+  AND A.REC_STATUS   = 'A'
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  and b.SERV_PROV_CODE='KNOXVILLE'
+
+ ) AA WHERE aa.AGENCY_ID='KNOXVILLE' and RECORD_ID=@RECORD_ID
+ --'IBC-ADD-22-0011'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="AGENCY_ID">
+          <DataField>AGENCY_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ID">
+          <DataField>ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ENTITY">
+          <DataField>ENTITY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ATTRIBUTE">
+          <DataField>ATTRIBUTE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="VALUE">
+          <DataField>VALUE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ROW_INDEX">
+          <DataField>ROW_INDEX</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_ID">
+          <DataField>RECORD_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="A_GROUP">
+          <DataField>A_GROUP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_DATE">
+          <DataField>UPDATED_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_BY">
+          <DataField>UPDATED_BY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DISPLAY_ORDER">
+          <DataField>DISPLAY_ORDER</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="T_ID1">
+          <DataField>T_ID1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="T_ID2">
+          <DataField>T_ID2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="T_ID3">
+          <DataField>T_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_SOURCE">
+          <DataField>RECORD_SOURCE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GROUP_ORDER">
+          <DataField>GROUP_ORDER</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="OUTPUT_ORDER">
+          <DataField>OUTPUT_ORDER</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!ATTRIBUTE.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>11pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox1</rd:DefaultName>
+            <Height>0.25in</Height>
+            <Width>1.8125in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!VALUE.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>11pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox1</rd:DefaultName>
+            <Left>1.875in</Left>
+            <Height>0.25in</Height>
+            <Width>1.07292in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <Height>0.29167in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>2.98958in</Width>
+      <Page>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="RECORD_ID">
+      <DataType>String</DataType>
+      <Prompt>RECORD ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>RECORD_ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>bc4a5d53-9456-47cb-ba6d-6942d15eb303</rd:ReportID>
+</Report>

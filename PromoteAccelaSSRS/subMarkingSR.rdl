@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>2a821edb-f458-4e8e-b373-b693f492e204</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@startdate">
+            <Value>=Parameters!startdate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@enddate">
+            <Value>=Parameters!enddate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT count(i.parent_record_id) Record_Count
+from 
+(SELECT A1.SERV_PROV_CODE                  AS AGENCY_ID ,B1.B1_CREATED_BY_ACA              AS CHILD_ACA_INITIATED ,B1.B1_APPL_CLASS                  AS CHILD_COMPLETENESS ,B1.B1_PER_GROUP                   AS CHILD_MODULE ,B1.B1_SPECIAL_TEXT                AS CHILD_NAME ,B1.B1_FILE_DD                     AS CHILD_OPEN_DATE ,B1.REC_DATE                       AS CHILD_OPEN_DATE_ORIG ,B1.B1_ALT_ID                      AS CHILD_RECORD_ID ,X1.B1_STATUS                      AS CHILD_RENEWAL_STATUS ,B1.B1_APPL_STATUS                 AS CHILD_STATUS ,B1.B1_APPL_STATUS_DATE            AS CHILD_STATUS_DATE ,B1.B1_APP_TYPE_ALIAS              AS CHILD_TYPE ,concat(B1.B1_PER_GROUP,'/',B1.B1_PER_TYPE,'/',B1.B1_PER_SUB_TYPE,'/',B1.B1_PER_CATEGORY) AS CHILD_TYPE_4LEVEL# ,B1.B1_PER_CATEGORY                AS CHILD_TYPE_CATEGORY ,B1.B1_PER_GROUP                   AS CHILD_TYPE_GROUP ,B1.B1_PER_SUB_TYPE                AS CHILD_TYPE_SUBTYPE ,B1.B1_PER_TYPE                    AS CHILD_TYPE_TYPE ,B1.REC_FUL_NAM                    AS CHILD_UPDATED_BY ,A1.B1_CREATED_BY_ACA              AS PARENT_ACA_INITIATED ,A1.B1_APPL_CLASS                  AS PARENT_COMPLETENESS ,A1.B1_PER_GROUP                   AS PARENT_MODULE ,A1.B1_SPECIAL_TEXT                AS PARENT_NAME ,A1.B1_FILE_DD                     AS PARENT_OPEN_DATE ,A1.REC_DATE                       AS PARENT_OPEN_DATE_ORIG ,A1.B1_ALT_ID                      AS PARENT_RECORD_ID ,A1.B1_APPL_STATUS                 AS PARENT_STATUS ,A1.B1_APPL_STATUS_DATE            AS PARENT_STATUS_DATE ,A1.B1_APP_TYPE_ALIAS              AS PARENT_TYPE ,concat(A1.B1_PER_GROUP,'/',A1.B1_PER_TYPE,'/',A1.B1_PER_SUB_TYPE,'/',A1.B1_PER_CATEGORY) AS PARENT_TYPE_4LEVEL# ,A1.B1_PER_CATEGORY                AS PARENT_TYPE_CATEGORY ,A1.B1_PER_GROUP                   AS PARENT_TYPE_GROUP ,A1.B1_PER_SUB_TYPE                AS PARENT_TYPE_SUBTYPE ,A1.B1_PER_TYPE                    AS PARENT_TYPE_TYPE ,A1.REC_FUL_NAM                    AS PARENT_UPDATED_BY ,X1.B1_RELATIONSHIP                AS RELATIONSHIP_TYPE 
+  FROM B1PERMIT A1 
+  INNER JOIN XAPP2REF X1 ON A1.SERV_PROV_CODE = X1.SERV_PROV_CODE AND A1.B1_PER_ID1 = X1.B1_MASTER_ID1 AND A1.B1_PER_ID2 = X1.B1_MASTER_ID2 AND A1.B1_PER_ID3 = X1.B1_MASTER_ID3 AND A1.REC_STATUS = X1.REC_STATUS 
+  INNER JOIN B1PERMIT B1 ON X1.SERV_PROV_CODE = B1.SERV_PROV_CODE AND X1.B1_PER_ID1 = B1.B1_PER_ID1 AND X1.B1_PER_ID2 = B1.B1_PER_ID2 AND X1.B1_PER_ID3 = B1.B1_PER_ID3 AND X1.REC_STATUS = B1.REC_STATUS 
+  WHERE ( A1.B1_APPL_STATUS NOT IN ('Void','VOID','void','Voided','VOIDED','voided') OR A1.B1_APPL_STATUS IS NULL ) 
+	AND ( B1.B1_APPL_STATUS NOT IN ('Void','VOID','void','Voided','VOIDED','voided') OR B1.B1_APPL_STATUS IS NULL ) 
+	AND A1.REC_STATUS = 'A' AND X1.B1_RELATIONSHIP&lt;&gt;'EST')--v_related_record 
+	i
+where i.CHILD_RECORD_ID in 
+(select h.PARENT_RECORD_ID SERVICE_REQUEST_NUM 
+FROM   B1PERMIT A2  --WO_MARKING_VW
+left join v_related_record h on   h.CHILD_RECORD_ID  = a2.B1_ALT_ID
+WHERE  a2.B1_PER_TYPE            = 'Work Order'
+  AND a2.B1_PER_SUB_TYPE          = 'Traffic Engineering'
+  AND a2.B1_Per_Category          = 'Marking'
+  AND isnull(a2.B1_APPL_STATUS,'x') &lt;&gt; 'Canceled'
+  AND (a2.B1_APPL_STATUS_DATE  BETWEEN @startdate AND @enddate ) AND (a2.B1_APPL_STATUS IN ('Completed', 'Closed'))
+   and a2.SERV_PROV_CODE='KNOXVILLE'
+  )
+ </CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="Record_Count">
+          <DataField>Record_Count</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.77083in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Marking Service Requests Completed:</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="COUNT_SERVICE_REQUEST_NUM_">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Record_Count.Value</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>COUNT_SERVICE_REQUEST_NUM_</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>3.77083in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.21in</Height>
+        <Style />
+      </Body>
+      <Width>3.77083in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="startdate">
+      <DataType>DateTime</DataType>
+      <Prompt>startdate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="enddate">
+      <DataType>DateTime</DataType>
+      <Prompt>enddate</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>startdate</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>enddate</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>6016e745-b3d9-473e-85ae-ad5f8ed755b3</rd:ReportID>
+</Report>

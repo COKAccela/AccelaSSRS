@@ -1,0 +1,3773 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>1f00f5a9-af99-4d34-ad65-d55d304caaea</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@altID">
+            <Value>=Parameters!altID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT DISTINCT 
+VR.[RECORD_ID] AS [RECORD ID],
+       VR.[PRIORITY]            AS [Formatted Record ID]
+,VR.[RECORD_TYPE]	     AS [RECORD TYPE]
+,VA.[ADDR_PARTIAL]	     AS [ADDR PARTIAL]
+,VA.[CITY]			     AS [CITY]
+,VA.[STATE_]			     AS [STATE]
+,VA.[ZIP] 			     AS [ZIP]
+,VR.[DATE_STATUS]	     AS [DATE STATUS]
+,VR.[TOTAL_INVOICED]	     AS [TOTAL INVOICED]
+,VR.[RECORD_NAME]	     AS [RECORD NAME]
+,VR.[DESCRIPTION]		 AS [DESCRIPTION]
+,VR.[SHORT_NOTES]		 
+,VR.[RECORD_STATUS_DATE]	 
+,VR.[JOB_VALUE]			 
+,VR.[TOTAL_PAID]			 
+,ASI_ROW.[EC_VALUE]		 AS [EC VALUE]
+,ASI_ROW.[PXP_VALUE]		 
+,ASI_ROW.[ISS_VALUE]		
+,VA.[UNIT_TYPE]			 
+,VA.[UNIT_NBR]			
+,ASI_ROW.[BSP_VALUE]		 AS [BUILDING INSPECTION SPECIAL CONDITIONS]
+,ASI_ROW.[ESP_VALUE]		 AS [ENGINEERING INSPECTION SPECIAL CONDITIONS]
+,ASI_ROW.[MEP_VALUE]		 AS [MEP INSPECTION SPECIAL CONDITIONS]
+,ASI_ROW.[ZSP_VALUE]		 AS [ZONING-SIGN INSPECTION SPECIAL CONDITIONS]
+	   FROM [DBO].[V_RECORD] AS VR
+inner join [DBO].[V_ADDRESS] VA on vr.RECORD_ID=va.RECORD_ID AND VR.AGENCY_ID=VA.AGENCY_ID
+inner join (select 
+  AGENCY_ID, RECORD_ID, TBA_ATTRIBUTE, TBA_VALUE, TBA_UPDATED, TBA_SOURCE, TBA_ORDER, 
+  EC_ATTRIBUTE, EC_VALUE, EC_UPDATED, EC_SOURCE, EC_ORDER, DU_ATTRIBUTE, DU_VALUE, 
+  DU_UPDATED, DU_SOURCE, DU_ORDER, CT_ATTRIBUTE, CT_VALUE, CT_UPDATED, CT_SOURCE, 
+  CT_ORDER, OCC_ATTRIBUTE, OCC_VALUE, OCC_UPDATED, OCC_SOURCE, OCC_ORDER, PXP_ATTRIBUTE, 
+  PXP_VALUE, PXP_UPDATED, PXP_SOURCE, PXP_ORDER, ISS_ATTRIBUTE, ISS_VALUE, ISS_UPDATED, 
+  ISS_SOURCE, ISS_ORDER, BSP_ATTRIBUTE, BSP_VALUE, BSP_UPDATED, BSP_SOURCE, BSP_ORDER, 
+  ESP_ATTRIBUTE, ESP_VALUE, ESP_UPDATED, ESP_SOURCE, ESP_ORDER, MEP_ATTRIBUTE, 
+  MEP_VALUE, MEP_UPDATED, MEP_SOURCE, MEP_ORDER, ZSP_ATTRIBUTE, ZSP_VALUE, ZSP_UPDATED, ZSP_SOURCE, ZSP_ORDER
+  from (
+  SELECT a.agency_id,
+    a.record_id,
+    b.attribute     AS TBA_attribute,
+    b.value         AS TBA_value,
+    b.updated_date  AS TBA_updated,
+    b.record_source AS TBA_source,
+    b.output_order  AS TBA_order,
+    c.attribute     AS EC_attribute,
+    c.value         AS EC_value,
+    c.updated_date  AS EC_updated,
+    c.record_source AS EC_source,
+    c.output_order  AS EC_order,
+    d.attribute     AS DU_attribute,
+    d.value         AS DU_value,
+    d.updated_date  AS DU_updated,
+    d.record_source AS DU_source,
+    d.output_order  AS DU_order,
+    j.attribute     AS CT_attribute,
+    j.value         AS CT_value,
+    j.updated_date  AS CT_updated,
+    j.record_source AS CT_source,
+    j.output_order  AS CT_order,
+    k.attribute     AS OCC_attribute,
+    k.value         AS OCC_value,
+    k.updated_date  AS OCC_updated,
+    k.record_source AS OCC_source,
+    k.output_order  AS OCC_order,
+    m.attribute     AS PXP_attribute,
+    m.value         AS PXP_value,
+    m.updated_date  AS PXP_updated,
+    m.record_source AS PXP_source,
+    m.output_order  AS PXP_order,
+    o.attribute     AS ISS_attribute,
+    o.value         AS ISS_value,
+    o.updated_date  AS ISS_updated,
+    o.record_source AS ISS_source,
+    o.output_order  AS ISS_order,
+    p.attribute     AS BSP_attribute,
+    p.value         AS BSP_value,
+    p.updated_date  AS BSP_updated,
+    p.record_source AS BSP_source,
+    p.output_order  AS BSP_order,
+    q.attribute     AS ESP_attribute,
+    q.value         AS ESP_value,
+    q.updated_date  AS ESP_updated,
+    q.record_source AS ESP_source,
+    q.output_order  AS ESP_order,
+    r.attribute     AS MEP_attribute,
+    r.value         AS MEP_value,
+    r.updated_date  AS MEP_updated,
+    r.record_source AS MEP_source,
+    r.output_order  AS MEP_order,
+    s.attribute     AS ZSP_attribute,
+    s.value         AS ZSP_value,
+    s.updated_date  AS ZSP_updated,
+    s.record_source AS ZSP_source,
+    s.output_order  AS ZSP_order
+  FROM v_record a
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) b
+  ON a.record_id  = b.record_id
+  AND b.attribute = 'Total Building Area (Sq. Ft)'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) c
+  ON a.record_id  = c.record_id
+  AND c.attribute = 'Estimated Cost (Job Value)'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) d
+  ON a.record_id  = d.record_id
+  AND d.attribute = 'Number of Dwelling Units'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) j
+  ON a.record_id  = j.record_id
+  AND j.attribute = 'Construction Type'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) k
+  ON a.record_id             = k.record_id
+  AND k.attribute            = 'Occupancy'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) m
+  ON a.record_id             = m.record_id
+  AND m.attribute            = 'Permit Expiration Date'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) o
+  ON a.record_id             = o.record_id
+  AND o.attribute            = 'Permit Issued Date'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) p
+  ON a.record_id             = p.record_id
+  AND p.attribute            = 'Building Inspection Special Conditions'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) q
+  ON a.record_id             = q.record_id
+  AND q.attribute            = 'Engineering Inspection Special Conditions'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) r
+  ON a.record_id             = r.record_id
+  AND r.attribute            = 'MEP Inspection Special Conditions'
+  LEFT OUTER JOIN (select 
+  AGENCY_ID, ID, ENTITY, ATTRIBUTE, VALUE, ROW_INDEX, RECORD_ID, A_GROUP, UPDATED_DATE, 
+  UPDATED_BY, DISPLAY_ORDER, T_ID1, T_ID2, T_ID3, RECORD_SOURCE, GROUP_ORDER, OUTPUT_ORDER from  (
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASI::'
+    + A.B1_ACT_STATUS
+    + '::'
+    + A.B1_CHECKBOX_TYPE  AS ENTITY,
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    0 ROW_INDEX,
+    B.B1_ALT_ID        AS RECORD_ID,
+    A.B1_CHECKBOX_TYPE AS A_GROUP,
+    A.REC_DATE         AS UPDATED_DATE,
+    A.REC_FUL_NAM      AS UPDATED_BY,
+    A.B1_DISPLAY_ORDER AS DISPLAY_ORDER,
+    A.B1_PER_ID1       AS T_ID1,
+    A.B1_PER_ID2       AS T_ID2,
+    A.B1_PER_ID3       AS T_ID3,
+    'ASI'              AS RECORD_SOURCE,
+    A.B1_GROUP_DISPLAY_ORDER AS GROUP_ORDER,
+    '0'+A.B1_GROUP_DISPLAY_ORDER+A.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.B1_PER_ID1
+    + '/'
+    + A.B1_PER_ID2
+    + '/'
+    + A.B1_PER_ID3 AS ID,
+    'ASIT::'
+    + A.GROUP_NAME
+    + '::'
+    + A.TABLE_NAME   AS ENTITY,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    A.ROW_INDEX       AS ROW_INDEX,
+    B.B1_ALT_ID       AS RECORD_ID,
+    A.TABLE_NAME      AS A_GROUP,
+    A.REC_DATE        AS UPDATED_DATE,
+    A.REC_FUL_NAM     AS UPDATED_BY,
+    C.B1_DISPLAY_ORDER    AS DISPLAY_ORDER,
+    A.B1_PER_ID1      AS T_ID1,
+    A.B1_PER_ID2      AS T_ID2,
+    A.B1_PER_ID3      AS T_ID3,
+    'ASIT'            AS RECORD_SOURCE,
+    C.B1_TABLE_DISPLAY_ORDER AS GROUP_ORDER,
+    A.ROW_INDEX+C.B1_TABLE_DISPLAY_ORDER+C.B1_DISPLAY_ORDER AS OUTPUT_ORDER
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+   AND A.SERV_PROV_CODE=B.SERV_PROV_CODE
+  AND A.SERV_PROV_CODE=C.SERV_PROV_CODE
+  AND A.REC_STATUS   = 'A'
+  ) sub
+) s
+  ON a.record_id             = s.record_id
+  AND s.attribute            = 'Zoning-Sign Inspection Special Conditions'
+  WHERE a.agency_id          = 'KNOXVILLE'
+AND a.record_type_4level# IN (
+    select n.r1_per_group+'/'+n.r1_per_type+'/'+n.r1_per_sub_type+'/'+n.r1_per_category as building_types
+    from r3apptyp n
+    where n.r1_per_group = 'Building' )
+  ) Main
+) ASI_ROW on ASI_ROW.RECORD_ID=vr.RECORD_ID
+where vr.RECORD_ID=@altID
+AND VR.AGENCY_ID='KNOXVILLE'
+--'IRC-MEC-23-0044'</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="RECORD_ID">
+          <DataField>RECORD ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Formatted_Record_ID">
+          <DataField>Formatted Record ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_TYPE">
+          <DataField>RECORD TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ADDR_PARTIAL">
+          <DataField>ADDR PARTIAL</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CITY">
+          <DataField>CITY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="STATE">
+          <DataField>STATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ZIP">
+          <DataField>ZIP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DATE_STATUS">
+          <DataField>DATE STATUS</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="TOTAL_INVOICED">
+          <DataField>TOTAL INVOICED</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_NAME">
+          <DataField>RECORD NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DESCRIPTION">
+          <DataField>DESCRIPTION</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SHORT_NOTES">
+          <DataField>SHORT_NOTES</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS_DATE">
+          <DataField>RECORD_STATUS_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="JOB_VALUE">
+          <DataField>JOB_VALUE</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="TOTAL_PAID">
+          <DataField>TOTAL_PAID</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="EC_VALUE">
+          <DataField>EC VALUE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PXP_VALUE">
+          <DataField>PXP_VALUE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ISS_VALUE">
+          <DataField>ISS_VALUE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UNIT_TYPE">
+          <DataField>UNIT_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UNIT_NBR">
+          <DataField>UNIT_NBR</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BUILDING_INSPECTION_SPECIAL_CONDITIONS">
+          <DataField>BUILDING INSPECTION SPECIAL CONDITIONS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ENGINEERING_INSPECTION_SPECIAL_CONDITIONS">
+          <DataField>ENGINEERING INSPECTION SPECIAL CONDITIONS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MEP_INSPECTION_SPECIAL_CONDITIONS">
+          <DataField>MEP INSPECTION SPECIAL CONDITIONS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ZONING_SIGN_INSPECTION_SPECIAL_CONDITIONS">
+          <DataField>ZONING-SIGN INSPECTION SPECIAL CONDITIONS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>PERMIT FOR WORK</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>14pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox1</rd:DefaultName>
+            <Left>2.42327in</Left>
+            <Height>0.40847in</Height>
+            <Width>3.125in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Line Name="Line1">
+            <Top>0.45708in</Top>
+            <Height>0in</Height>
+            <Width>7.9in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Tablix Name="Tablix2">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.23999in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.48375in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.26201in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.28472in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.19444in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox22">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Project Information</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox22</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>2</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.2175in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox28">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Project Number:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Formatted_Record_ID">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!RECORD_ID.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Formatted_Record_ID</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox14">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.16619in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox48">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Date Issued:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox48</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ISS_VALUE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ISS_VALUE.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ISS_VALUE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Tablix Name="Tablix3">
+                          <TablixBody>
+                            <TablixColumns>
+                              <TablixColumn>
+                                <Width>1.65273in</Width>
+                              </TablixColumn>
+                              <TablixColumn>
+                                <Width>1.632in</Width>
+                              </TablixColumn>
+                            </TablixColumns>
+                            <TablixRows>
+                              <TablixRow>
+                                <Height>0.16619in</Height>
+                                <TablixCells>
+                                  <TablixCell>
+                                    <CellContents>
+                                      <Textbox Name="Textbox49">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>Permit Expires:</Value>
+                                                <Style>
+                                                  <FontFamily>Calibri</FontFamily>
+                                                  <FontSize>12pt</FontSize>
+                                                  <FontWeight>Bold</FontWeight>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style />
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>Textbox48</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Color>White</Color>
+                                            <Style>None</Style>
+                                          </Border>
+                                          <VerticalAlign>Top</VerticalAlign>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixCell>
+                                  <TablixCell>
+                                    <CellContents>
+                                      <Textbox Name="PXP_VALUE">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>=Fields!PXP_VALUE.Value</Value>
+                                                <Style>
+                                                  <FontFamily>Calibri</FontFamily>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style />
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>PXP_VALUE</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Color>White</Color>
+                                            <Style>None</Style>
+                                          </Border>
+                                          <VerticalAlign>Top</VerticalAlign>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixCell>
+                                </TablixCells>
+                              </TablixRow>
+                            </TablixRows>
+                          </TablixBody>
+                          <TablixColumnHierarchy>
+                            <TablixMembers>
+                              <TablixMember />
+                              <TablixMember />
+                            </TablixMembers>
+                          </TablixColumnHierarchy>
+                          <TablixRowHierarchy>
+                            <TablixMembers>
+                              <TablixMember />
+                            </TablixMembers>
+                          </TablixRowHierarchy>
+                          <DataSetName>DataSet1</DataSetName>
+                          <ZIndex>3</ZIndex>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Tablix>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.5in</Top>
+            <Height>0.57813in</Height>
+            <Width>7.27047in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Color>White</Color>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix4">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.82333in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.90041in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.23833in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox29">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Address:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox38">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ADDR_PARTIAL.Value + " "+ Fields!CITY.Value + " " + Fields!STATE.Value + " "+ Fields!ZIP.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox38</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.24528in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox50">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Suite:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>14pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox48</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox37">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UNIT_TYPE.Value + " " + Fields!UNIT_NBR.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox37</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>White</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>1.41271in</Top>
+            <Height>0.48361in</Height>
+            <Width>2.72374in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Color>White</Color>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Line Name="Line2">
+            <Top>3.02604in</Top>
+            <Height>0in</Height>
+            <Width>7.9in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Textbox Name="Textbox54">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Contact Info:</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox39</rd:DefaultName>
+            <Top>3.11979in</Top>
+            <Height>0.27083in</Height>
+            <Width>1.49in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox55">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Licensed Professional(s):</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox39</rd:DefaultName>
+            <Top>3.73437in</Top>
+            <Height>0.27083in</Height>
+            <Width>2.39625in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox56">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Approved Scope of Work:</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox39</rd:DefaultName>
+            <Top>4.29948in</Top>
+            <Height>0.27083in</Height>
+            <Width>2.39625in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox57">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Associated M/E/P at Time of Review:</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox39</rd:DefaultName>
+            <Top>4.89453in</Top>
+            <Height>0.27083in</Height>
+            <Width>3.39041in</Width>
+            <ZIndex>8</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Line Name="Line3">
+            <Top>5.61914in</Top>
+            <Height>0in</Height>
+            <Width>7.9in</Width>
+            <ZIndex>9</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Textbox Name="Textbox61">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>To schedule an inspection, please visit
+https://webpermits.knoxvilletn.gov/WebPermits
+Or use QR Code below
+You will need your permit number:</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox61</rd:DefaultName>
+            <Top>5.66542in</Top>
+            <Height>0.88542in</Height>
+            <Width>3.76021in</Width>
+            <ZIndex>10</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox62">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Fields!RECORD_ID.Value</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox62</rd:DefaultName>
+            <Top>6.55083in</Top>
+            <Height>0.27083in</Height>
+            <Width>2.30583in</Width>
+            <ZIndex>11</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Image Name="Image1">
+            <Source>Embedded</Source>
+            <Value>qrcode_webpermits_knoxvilletn</Value>
+            <Sizing>FitProportional</Sizing>
+            <Top>6.82167in</Top>
+            <Height>1.60416in</Height>
+            <Width>1.61958in</Width>
+            <ZIndex>12</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Textbox Name="Textbox2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>- Please have your permit number ready.
+- Enter a contact number when prompted so one of our inspectors can reach you.
+- Inspections may be scheduled until 2PM for the following business day.
+- If after 2PM your inspection will not be scheduled for two business days.
+- You may schedule an inspection up to three days in advance.</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox2</rd:DefaultName>
+            <Top>8.50917in</Top>
+            <Height>1.05208in</Height>
+            <Width>7.72077in</Width>
+            <ZIndex>13</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox3">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>To check which inspector is assigned to your inspection on the day of please visit
+https://www.knoxvilletn.gov/government/city_departments_offices/plans_review_inspections</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>/inspection_scheduling Or use QR Code below</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>9.55666in</Top>
+            <Height>0.73264in</Height>
+            <Width>7.72077in</Width>
+            <ZIndex>14</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Image Name="Image2">
+            <Source>Embedded</Source>
+            <Value>qrcode_inspection_schedule</Value>
+            <Sizing>FitProportional</Sizing>
+            <Top>10.31708in</Top>
+            <Height>1.4375in</Height>
+            <Width>1.47958in</Width>
+            <ZIndex>15</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Textbox Name="Textbox4">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Approved City of Knoxville Plans and Plans Review Notes must be available on site at time of inspection.</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>11.82402in</Top>
+            <Height>0.29167in</Height>
+            <Width>7.89419in</Width>
+            <ZIndex>16</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Line Name="Line4">
+            <Top>12.13771in</Top>
+            <Height>0in</Height>
+            <Width>7.9in</Width>
+            <ZIndex>17</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Textbox Name="Textbox5">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>The following inspections have been indicated as REQUIRED INSPECTIONS by a Plans Examiner.These inspections
+are in addition to standard inspections and may not represent the entire list.</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox5</rd:DefaultName>
+            <Top>12.10986in</Top>
+            <Left>0.01042in</Left>
+            <Height>0.64583in</Height>
+            <Width>7.89419in</Width>
+            <ZIndex>18</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Tablix Name="Tablix5">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.98575in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.91886in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.23834in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox30">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Building Inspection Special Conditions:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="BUILDING_INSPECTION_SPECIAL_CONDITIONS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!BUILDING_INSPECTION_SPECIAL_CONDITIONS.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>BUILDING_INSPECTION_SPECIAL_CONDITIONS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.22791in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox18">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>MEP Inspection Special Conditions:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="MEP_INSPECTION_SPECIAL_CONDITIONS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!MEP_INSPECTION_SPECIAL_CONDITIONS.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>MEP_INSPECTION_SPECIAL_CONDITIONS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox11">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Engineering Inspection Special Conditions:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ENGINEERING_INSPECTION_SPECIAL_CONDITIONS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ENGINEERING_INSPECTION_SPECIAL_CONDITIONS.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ENGINEERING_INSPECTION_SPECIAL_CONDITIONS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.30208in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox13">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Zoning/Sign Inspection Special Conditions:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox13</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ZONING_SIGN_INSPECTION_SPECIAL_CONDITIONS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ZONING_SIGN_INSPECTION_SPECIAL_CONDITIONS.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ZONING_SIGN_INSPECTION_SPECIAL_CONDITIONS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>13.0076in</Top>
+            <Height>1.01833in</Height>
+            <Width>7.90461in</Width>
+            <ZIndex>19</ZIndex>
+            <Style>
+              <Border>
+                <Color>White</Color>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Subreport Name="SubBldgPermitInspreq">
+            <ReportName>SubBldgPermitInspReq</ReportName>
+            <Parameters>
+              <Parameter Name="RECORD_ID">
+                <Value>=Parameters!altID.Value</Value>
+              </Parameter>
+            </Parameters>
+            <Top>12.75916in</Top>
+            <Height>0.23958in</Height>
+            <Width>7.90461in</Width>
+            <ZIndex>20</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Subreport>
+          <Subreport Name="SubBldgApprovedScopeofWork">
+            <ReportName>SubBldgApprovedScopeofWork</ReportName>
+            <Parameters>
+              <Parameter Name="RECORD_ID">
+                <Value>=Parameters!altID.Value</Value>
+              </Parameter>
+            </Parameters>
+            <Top>4.63064in</Top>
+            <Height>0.23611in</Height>
+            <Width>7.64419in</Width>
+            <ZIndex>21</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Subreport>
+          <Subreport Name="SubBldgLicensedProfessional">
+            <ReportName>SubBldgLicensedProfessional</ReportName>
+            <Parameters>
+              <Parameter Name="RECORD_ID">
+                <Value>=Parameters!altID.Value</Value>
+              </Parameter>
+            </Parameters>
+            <Top>4.07465in</Top>
+            <Height>0.20598in</Height>
+            <Width>4.88124in</Width>
+            <ZIndex>22</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Subreport>
+          <Subreport Name="SubBldgContactInfo">
+            <ReportName>SubBldgContactInfo</ReportName>
+            <Parameters>
+              <Parameter Name="RECORD_ID">
+                <Value>=Parameters!altID.Value</Value>
+              </Parameter>
+            </Parameters>
+            <Top>3.4566in</Top>
+            <Height>0.25in</Height>
+            <Width>4.88124in</Width>
+            <ZIndex>23</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Subreport>
+          <Subreport Name="Subreport2">
+            <ReportName>SubBldgParcelInfo</ReportName>
+            <Parameters>
+              <Parameter Name="RECORD_ID">
+                <Value>=Parameters!altID.Value</Value>
+              </Parameter>
+            </Parameters>
+            <Top>1.97792in</Top>
+            <Height>0.20139in</Height>
+            <Width>2.72374in</Width>
+            <ZIndex>24</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Subreport>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.16104in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.09396in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Plans Review:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="SubBldgPlansReviewReq">
+                          <ReportName>SubBldgPlansReviewReq</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.32167in</Top>
+            <Height>0.25in</Height>
+            <Width>2.255in</Width>
+            <ZIndex>25</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix6">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.44389in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.52266in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox15">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Construction Type:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox15</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="SubBldgCOConstructionType">
+                          <ReportName>SubBldgCOConstructionType</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details1" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.32167in</Top>
+            <Left>2.24875in</Left>
+            <Height>0.25in</Height>
+            <Width>2.96655in</Width>
+            <ZIndex>26</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix7">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.29147in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.1493in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox23">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Occupancy Class:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox23</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport4">
+                          <ReportName>SubBldgCOOccupancyClass</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details2" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.32167in</Top>
+            <Left>5.28in</Left>
+            <Height>0.25in</Height>
+            <Width>2.44077in</Width>
+            <ZIndex>27</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix8">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.16104in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.09396in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox32">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Zoning:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox32</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport5">
+                          <ReportName>SubBldgZoning</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details3" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.69667in</Top>
+            <Height>0.25in</Height>
+            <Width>2.255in</Width>
+            <ZIndex>28</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix9">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.76666in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.20577in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox40">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Sprinkler:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox40</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport6">
+                          <ReportName>SubBldgCOSprinklerYN</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details4" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.69667in</Top>
+            <Left>2.24875in</Left>
+            <Height>0.25in</Height>
+            <Width>1.97243in</Width>
+            <ZIndex>29</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix10">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.41647in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.19772in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox41">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Occupancy Load:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>12pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox40</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="SubBldgCODesignOccupantLoad">
+                          <ReportName>SubBldgCODesignOccupantLoad</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details5" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>2.69667in</Top>
+            <Left>5.28in</Left>
+            <Height>0.25in</Height>
+            <Width>2.61419in</Width>
+            <ZIndex>30</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix11">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.98in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.58417in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.29007in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox47">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Mechanical:</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox47</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport8">
+                          <ReportName>SubBldgMecNeeded</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details6" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>5.22092in</Top>
+            <Height>0.29007in</Height>
+            <Width>2.56417in</Width>
+            <ZIndex>31</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix12">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.98in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.58417in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.29007in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox51">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Electrical:</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox47</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport9">
+                          <ReportName>SubBldgElectricalNeeded</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details7" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>5.22092in</Top>
+            <Left>2.65113in</Left>
+            <Height>0.29007in</Height>
+            <Width>2.56417in</Width>
+            <ZIndex>32</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Tablix Name="Tablix13">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.78389in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.58417in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.29007in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox58">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Plumbing:</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox47</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Subreport Name="Subreport10">
+                          <ReportName>SubBldgPlumNeeded</ReportName>
+                          <Parameters>
+                            <Parameter Name="RECORD_ID">
+                              <Value>=Parameters!altID.Value</Value>
+                            </Parameter>
+                          </Parameters>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                          </Style>
+                        </Subreport>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details8" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <Top>5.22092in</Top>
+            <Left>5.27613in</Left>
+            <Height>0.29007in</Height>
+            <Width>2.36806in</Width>
+            <ZIndex>33</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>14.07166in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>7.90461in</Width>
+      <Page>
+        <PageHeader>
+          <Height>1.02778in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox6">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>City of Knoxville
+Development Services, Plans Review and Inspections Division
+400 W. Main St - Room 475
+Knoxville, TN 37902
+865-215-3669</Value>
+                      <Style>
+                        <FontFamily>Calibri</FontFamily>
+                        <FontSize>12pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox6</rd:DefaultName>
+              <Height>1in</Height>
+              <Width>7.84577in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <VerticalAlign>Middle</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="altID">
+      <DataType>String</DataType>
+      <Prompt>alt ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>altID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="qrcode_inspection_schedule">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+    <EmbeddedImage Name="qrcode_webpermits_knoxvilletn">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>4272de30-f848-436c-903e-50595073c854</rd:ReportID>
+</Report>
