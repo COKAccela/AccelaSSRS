@@ -9,13 +9,17 @@
       <am:Name>MSRB</am:Name>
       <am:Version>15.0.20283.0</am:Version>
     </am:UpdatedBy>
-    <am:LastModifiedTimestamp>2025-11-10T19:02:17.4310874Z</am:LastModifiedTimestamp>
+    <am:LastModifiedTimestamp>2025-11-13T21:11:49.9605841Z</am:LastModifiedTimestamp>
   </am:AuthoringMetadata>
   <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="DataSource1">
-      <DataSourceReference>/Data Sources/Accela</DataSourceReference>
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=CITYSQL2022;Initial Catalog=AccelaNONPROD1</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>b060db11-166e-45a6-8063-cf6a3b68b729</rd:DataSourceID>
     </DataSource>
@@ -42,7 +46,7 @@ else
 end as covenants,
 dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Bond Name') bondName,
 CAST(dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Bond Amount') AS DECIMAL(10, 2)) bondAmount,
-CAST(dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Subtotal') AS DECIMAL(10, 2)) subtotal,
+CAST(dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Bond Calculation') AS DECIMAL(10, 2)) subtotal,
 dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Permit Number') permitNumber,
 dbo.fn_get_app_spec_info (a.SERV_PROV_CODE, a.B1_PER_ID1, a.B1_PER_ID2, a.B1_PER_ID3, 'Block Number') blockNumber,
 dbo.fn_get_stdchoice_valuedesc ('KNOXVILLE', 'Report_Details', 'EngDevServices_Bond_Name') edsPerson,
@@ -364,15 +368,16 @@ order by b1_contact_nbr</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox1">
+                        <Textbox Name="b1_alt_id">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Project Information</Value>
+                                  <Value>=Fields!b1_alt_id.Value</Value>
                                   <Style>
+                                    <FontFamily>Arial</FontFamily>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -380,7 +385,7 @@ order by b1_contact_nbr</CommandText>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <rd:DefaultName>b1_alt_id</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -846,8 +851,7 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
-            <Top>2.44667in</Top>
-            <Left>0.04652in</Left>
+            <Top>2.19667in</Top>
             <Height>1.75in</Height>
             <Width>6.48958in</Width>
             <Style>
@@ -862,7 +866,6 @@ order by b1_contact_nbr</CommandText>
             <MIMEType>image/jpeg</MIMEType>
             <Sizing>FitProportional</Sizing>
             <Top>0.18625in</Top>
-            <Left>0.04652in</Left>
             <Height>0.52083in</Height>
             <Width>6.48958in</Width>
             <ZIndex>1</ZIndex>
@@ -1413,7 +1416,6 @@ order by b1_contact_nbr</CommandText>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
             <Top>0.8425in</Top>
-            <Left>0.04652in</Left>
             <Height>1.34375in</Height>
             <Width>6.48958in</Width>
             <ZIndex>2</ZIndex>
@@ -1443,10 +1445,9 @@ order by b1_contact_nbr</CommandText>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox96</rd:DefaultName>
-            <Top>4.26958in</Top>
-            <Left>0.04652in</Left>
+            <Top>4.01958in</Top>
             <Height>1.27083in</Height>
-            <Width>6.44917in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
@@ -1463,10 +1464,10 @@ order by b1_contact_nbr</CommandText>
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>5.03528in</Width>
+                  <Width>5.02029in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.4625in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -1547,6 +1548,116 @@ order by b1_contact_nbr</CommandText>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>subtotal</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.15625in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox14">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox16">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox16</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -1819,14 +1930,16 @@ order by b1_contact_nbr</CommandText>
                     <TablixMember />
                     <TablixMember />
                     <TablixMember />
+                    <TablixMember />
                   </TablixMembers>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
-            <Top>7.32166in</Top>
-            <Height>0.75in</Height>
-            <Width>6.49778in</Width>
+            <Top>7.07166in</Top>
+            <Left>0in</Left>
+            <Height>0.90625in</Height>
+            <Width>6.49569in</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -1851,8 +1964,7 @@ order by b1_contact_nbr</CommandText>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox117</rd:DefaultName>
-            <Top>8.14806in</Top>
-            <Left>0.03527in</Left>
+            <Top>8.02306in</Top>
             <Height>0.32292in</Height>
             <Width>5.06208in</Width>
             <ZIndex>5</ZIndex>
@@ -1873,10 +1985,10 @@ order by b1_contact_nbr</CommandText>
                   <Width>2.15042in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.87875in</Width>
+                  <Width>2.86987in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.4625in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -2010,9 +2122,10 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>GradingTotal</DataSetName>
-            <Top>6.32166in</Top>
+            <Top>6.07166in</Top>
+            <Left>0in</Left>
             <Height>0.25in</Height>
-            <Width>6.49167in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>6</ZIndex>
             <Style>
               <Border>
@@ -2027,10 +2140,10 @@ order by b1_contact_nbr</CommandText>
                   <Width>2.15014in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.90139in</Width>
+                  <Width>2.87015in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.44013in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -2058,9 +2171,28 @@ order by b1_contact_nbr</CommandText>
                           <rd:DefaultName>Textbox97</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
                             <BackgroundColor>LightGrey</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
@@ -2099,9 +2231,28 @@ order by b1_contact_nbr</CommandText>
                           <rd:DefaultName>Textbox98</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
                             <BackgroundColor>LightGrey</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
@@ -2134,9 +2285,28 @@ order by b1_contact_nbr</CommandText>
                           <rd:DefaultName>Textbox100</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
                             <BackgroundColor>LightGrey</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
@@ -2168,10 +2338,9 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
-            <Top>5.58208in</Top>
-            <Left>0.03527in</Left>
+            <Top>5.33208in</Top>
             <Height>0.73958in</Height>
-            <Width>6.49166in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>7</ZIndex>
             <Style>
               <Border>
@@ -2186,10 +2355,10 @@ order by b1_contact_nbr</CommandText>
                   <Width>1.94778in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.0875in</Width>
+                  <Width>3.07251in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.4625in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -2321,9 +2490,10 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>StormwaterTotal</DataSetName>
-            <Top>6.57166in</Top>
+            <Top>6.32166in</Top>
+            <Left>0in</Left>
             <Height>0.25in</Height>
-            <Width>6.49778in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>8</ZIndex>
             <Style>
               <Border>
@@ -2338,10 +2508,10 @@ order by b1_contact_nbr</CommandText>
                   <Width>2.09764in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.93764in</Width>
+                  <Width>2.92265in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.4625in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -2473,9 +2643,10 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>LandscapeTotal</DataSetName>
-            <Top>7.07166in</Top>
+            <Top>6.82166in</Top>
+            <Left>0in</Left>
             <Height>0.25in</Height>
-            <Width>6.49778in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>9</ZIndex>
             <Style>
               <Border>
@@ -2490,10 +2661,10 @@ order by b1_contact_nbr</CommandText>
                   <Width>2.05481in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.98047in</Width>
+                  <Width>2.96548in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.46453in</Width>
+                  <Width>1.4754in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -2625,9 +2796,10 @@ order by b1_contact_nbr</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>TransportationTotal</DataSetName>
-            <Top>6.82166in</Top>
+            <Top>6.57166in</Top>
+            <Left>0in</Left>
             <Height>0.25in</Height>
-            <Width>6.49981in</Width>
+            <Width>6.49569in</Width>
             <ZIndex>10</ZIndex>
             <Style>
               <Border>
@@ -2636,14 +2808,14 @@ order by b1_contact_nbr</CommandText>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>8.8425in</Height>
+        <Height>8.47098in</Height>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Body>
-      <Width>6.92667in</Width>
+      <Width>6.7236in</Width>
       <Page>
         <LeftMargin>0.75in</LeftMargin>
         <RightMargin>0.75in</RightMargin>
@@ -2673,6 +2845,5 @@ order by b1_contact_nbr</CommandText>
     </GridLayoutDefinition>
   </ReportParametersLayout>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://citysql2022/reportserver</rd:ReportServerUrl>
   <rd:ReportID>d82c9c67-c9a0-45e5-b00b-00204ade1df5</rd:ReportID>
 </Report>
