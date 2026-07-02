@@ -1,0 +1,1447 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>bad1b90e-a66f-41f8-a318-275868609d17</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="AccelaDataSet">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT B1PERMIT.SERV_PROV_CODE,
+  B1PERMIT.B1_PER_ID2,
+  B1PERMIT.B1_PER_ID1,
+  B1PERMIT.B1_PER_ID3,
+  B1PERMIT.B1_PER_SUB_TYPE,
+  B1PERMIT.B1_ALT_ID,
+  B3ADDRES.B1_HSE_NBR_START,
+  B3ADDRES.B1_STR_DIR,
+  B3ADDRES.B1_STR_NAME,
+  B3ADDRES.B1_STR_SUFFIX,
+  B3OWNERS.B1_OWNER_FULL_NAME,
+  B3OWNERS.B1_MAIL_ADDRESS1,
+  B3OWNERS.B1_MAIL_ADDRESS2,
+  B3OWNERS.B1_MAIL_ADDRESS3,
+  B3OWNERS.B1_MAIL_CITY,
+  B3OWNERS.B1_MAIL_ZIP,
+  B3OWNERS.B1_MAIL_STATE,
+  B3PARCEL.B1_PARCEL_NBR,
+  GPROCESS.SD_APP_DES,
+  GPROCESS.SD_PRO_DES,
+  gprocess.g6_stat_dd,
+  g6action.g6_compl_dd
+from b1permit
+left outer join b3addres on
+b3addres.serv_prov_code = b1permit.serv_prov_code
+and b3addres.b1_per_id1 = b1permit.b1_per_id1  
+and b3addres.b1_per_id2 = b1permit.b1_per_id2   
+and b3addres.b1_per_id3 = b1permit.b1_per_id3
+left outer join b3owners on
+b3owners.serv_prov_code = b1permit.serv_prov_code  
+and b3owners.b1_per_id1 = b1permit.b1_per_id1  
+and b3owners.b1_per_id2 = b1permit.b1_per_id2  
+and b3owners.b1_per_id3 = b1permit.b1_per_id3 
+and b3owners.b1_primary_owner = 'Y'
+left outer join B3PARCEL on
+b3parcel.serv_prov_code = b1permit.serv_prov_code  
+and b3parcel.b1_per_id1 = b1permit.b1_per_id1          
+and b3parcel.b1_per_id2 = b1permit.b1_per_id2          
+and b3parcel.b1_per_id3 = b1permit.b1_per_id3    
+left outer join gprocess on 
+gprocess.serv_prov_code = b1permit.serv_prov_code      
+and gprocess.b1_per_id1 = b1permit.b1_per_id1          
+and gprocess.b1_per_id2 = b1permit.b1_per_id2         
+and gprocess.b1_per_id3 = b1permit.b1_per_id3          
+and gprocess.sd_app_des = 'Completed'
+and gprocess.sd_pro_des in ('PS Work Order','PS WO Board House','PS WO Demo')
+left outer join g6action on
+g6action.b1_per_id1 = b1permit.b1_per_id1          
+and g6action.b1_per_id1 = b1permit.b1_per_id1          
+and g6action.b1_per_id2 = b1permit.b1_per_id2         
+and g6action.b1_per_id3 = b1permit.b1_per_id3          
+and g6action.g6_status = 'Inspector Corrected'
+where 
+b1permit.b1_per_sub_type = 'Dirty Lot'
+AND B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE'
+and B1PERMIT.B1_ALT_ID=(@ID)</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="SERV_PROV_CODE">
+          <DataField>SERV_PROV_CODE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID2">
+          <DataField>B1_PER_ID2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID1">
+          <DataField>B1_PER_ID1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_HSE_NBR_START">
+          <DataField>B1_HSE_NBR_START</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID3">
+          <DataField>B1_PER_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_STR_DIR">
+          <DataField>B1_STR_DIR</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_SUB_TYPE">
+          <DataField>B1_PER_SUB_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_STR_NAME">
+          <DataField>B1_STR_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_ALT_ID">
+          <DataField>B1_ALT_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_STR_SUFFIX">
+          <DataField>B1_STR_SUFFIX</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_OWNER_FULL_NAME">
+          <DataField>B1_OWNER_FULL_NAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_ADDRESS1">
+          <DataField>B1_MAIL_ADDRESS1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_STATE">
+          <DataField>B1_MAIL_STATE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_ADDRESS2">
+          <DataField>B1_MAIL_ADDRESS2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_ZIP">
+          <DataField>B1_MAIL_ZIP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_ADDRESS3">
+          <DataField>B1_MAIL_ADDRESS3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MAIL_CITY">
+          <DataField>B1_MAIL_CITY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PARCEL_NBR">
+          <DataField>B1_PARCEL_NBR</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SD_APP_DES">
+          <DataField>SD_APP_DES</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SD_PRO_DES">
+          <DataField>SD_PRO_DES</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G6_STAT_DD">
+          <DataField>g6_stat_dd</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="G6_COMPL_DD">
+          <DataField>g6_compl_dd</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="FDirector">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT "RBIZDOMAIN_VALUE"."VALUE_DESC" as FDirector
+FROM "RBIZDOMAIN_VALUE" 
+WHERE "RBIZDOMAIN_VALUE"."SERV_PROV_CODE" = 'KNOXVILLE' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN" = 'COK Agency Contacts' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN_VALUE" = 'Finance Director'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="FDIRECTOR">
+          <DataField>FDirector</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Attorney">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT "RBIZDOMAIN_VALUE"."VALUE_DESC"  as Attorney
+FROM "RBIZDOMAIN_VALUE" 
+WHERE "RBIZDOMAIN_VALUE"."SERV_PROV_CODE" = 'KNOXVILLE' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN" = 'COK Agency Contacts' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN_VALUE" = 'City Attorney'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="ATTORNEY">
+          <DataField>Attorney</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Manager">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT "RBIZDOMAIN_VALUE"."VALUE_DESC" as Manager
+FROM "RBIZDOMAIN_VALUE" 
+WHERE "RBIZDOMAIN_VALUE"."SERV_PROV_CODE" = 'KNOXVILLE' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN" = 'COK Agency Contacts' AND "RBIZDOMAIN_VALUE"."BIZDOMAIN_VALUE" = 'Lien Manager'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="MANAGER">
+          <DataField>Manager</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Fees">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT B1PERMIT.B1_ALT_ID,
+  F4FEEITEM.GF_DES,
+  F4FEEITEM.GF_FEE
+FROM F4FEEITEM
+INNER JOIN B1PERMIT
+ON B1PERMIT.SERV_PROV_CODE = F4FEEITEM.SERV_PROV_CODE 
+AND B1PERMIT.B1_PER_ID1  =  F4FEEITEM.B1_PER_ID1
+AND B1PERMIT.B1_PER_ID2  =  F4FEEITEM.B1_PER_ID2
+and b1permit.b1_per_id3  =  f4feeitem.b1_per_id3
+and  (trim(f4feeitem.gf_des)) &lt;&gt; 'LATE FEE' 
+and (TRIM(F4FEEITEM.GF_DES)) &lt;&gt; 'FILING LIEN' 
+and f4feeitem.gf_item_status_flag = 'INVOICED' 
+AND B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE'
+and b1permit.b1_alt_id= (@ID)</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>B1_ALT_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GF_DES">
+          <DataField>GF_DES</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GF_FEE">
+          <DataField>GF_FEE</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="TotalFee">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT B1PERMIT.B1_ALT_ID,
+  F4FEEITEM.GF_DES,
+  F4FEEITEM.GF_FEE as TotalAmt
+FROM F4FEEITEM
+INNER JOIN B1PERMIT
+ON F4FEEITEM.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE
+AND F4FEEITEM.B1_PER_ID1    = B1PERMIT.B1_PER_ID1
+AND F4FEEITEM.B1_PER_ID2    = B1PERMIT.B1_PER_ID2
+AND F4FEEITEM.B1_PER_ID3    = B1PERMIT.B1_PER_ID3
+and F4FEEITEM.gf_item_status_flag = 'INVOICED'
+AND B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE'
+and B1PERMIT.B1_ALT_ID= (@ID)</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>B1_ALT_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GF_DES">
+          <DataField>GF_DES</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TOTALAMT">
+          <DataField>TotalAmt</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="PAYMENTS">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select b1permit.b1_alt_id,
+  PAYMENT_AMOUNT
+FROM F4PAYMENT
+inner join b1permit
+ON F4PAYMENT.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE
+AND F4PAYMENT.B1_PER_ID1    = B1PERMIT.B1_PER_ID1
+AND F4PAYMENT.B1_PER_ID2    = B1PERMIT.B1_PER_ID2
+and f4payment.b1_per_id3    = b1permit.b1_per_id3
+and B1PERMIT.B1_ALT_ID= (@ID)
+where f4payment.payment_status not in ('VOIDED')
+AND B1PERMIT.SERV_PROV_CODE = 'KNOXVILLE'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PAYMENT_AMOUNT">
+          <DataField>PAYMENT_AMOUNT</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ManagerTItle">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT "RBIZDOMAIN_VALUE"."VALUE_DESC" as ManagerTitle
+from "RBIZDOMAIN_VALUE" 
+where "RBIZDOMAIN_VALUE"."SERV_PROV_CODE" = 'KNOXVILLE' 
+and "RBIZDOMAIN_VALUE"."BIZDOMAIN" = 'COK Agency Contacts' 
+AND "RBIZDOMAIN_VALUE"."BIZDOMAIN_VALUE" = 'Lien Manager Title'</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="MANAGERTITLE">
+          <DataField>ManagerTitle</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Textbox2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>This instrument prepared by</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!ATTORNEY.Value, "Attorney")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Attorney, City of Knoxville</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>400 Main Street</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Knoxville, Tennessee 37902</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox2</rd:DefaultName>
+            <Top>0.31819in</Top>
+            <Left>3.57166in</Left>
+            <Height>1in</Height>
+            <Width>2.625in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox3">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>IN THE REGISTER'S OFFICE FOR KNOX COUNTY, TENNESSEE</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>Underline</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>1.47792in</Top>
+            <Left>0.90499in</Left>
+            <Height>0.35417in</Height>
+            <Width>5.28125in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox4">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>TO:</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>2.03347in</Top>
+            <Left>0.37375in</Left>
+            <Height>0.25in</Height>
+            <Width>0.48958in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox5">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>NOTICE OF LIEN</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>Underline</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>2.44319in</Top>
+            <Left>1.74875in</Left>
+            <Height>0.29861in</Height>
+            <Width>3.45833in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox6">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>CITY OF KNOXVILLE</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>___________________________________________________</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!FDIRECTOR.Value, "FDirector")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>DEPUTY FINANCE DIRECTOR</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>5.49527in</Top>
+            <Left>2.56124in</Left>
+            <Height>1.24306in</Height>
+            <Width>4.4375in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox7">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>By:</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>5.99527in</Top>
+            <Left>2.12027in</Left>
+            <Height>0.25in</Height>
+            <Width>0.42708in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox9">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>STATE OF TENNESSEE </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>COUNTY OF KNOX</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value xml:space="preserve"> </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Normal</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value xml:space="preserve"> </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Normal</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>)</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>            Before me, a Notary Public in and for the County and state aforesaid, personally appeared the above named with whom I am personally acquainted and who is authorized to execute the foregoing instrument for the purpose therein contained.</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>             WITNESS my hand and official seal this ____ day of_____________________, </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Year(Globals!ExecutionTime)</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>.</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox4</rd:DefaultName>
+            <Top>6.81486in</Top>
+            <Left>0.37375in</Left>
+            <Height>2.13542in</Height>
+            <Width>6.82291in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Line Name="Line2">
+            <Top>9.66888in</Top>
+            <Left>3.38416in</Left>
+            <Height>0in</Height>
+            <Width>2.80208in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Textbox Name="Textbox12">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>NOTARY PUBLIC</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>My Commission Expires: ____________</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox12</rd:DefaultName>
+            <Top>9.69666in</Top>
+            <Left>3.38416in</Left>
+            <Height>0.4618in</Height>
+            <Width>3.8125in</Width>
+            <ZIndex>8</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="B1_OWNER_FULL_NAME">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!B1_OWNER_FULL_NAME.Value, "AccelaDataSet")+", "+iif(Len(TRIM(First(Fields!B1_MAIL_ADDRESS1.Value, "AccelaDataSet")))=0,nothing,TRIM(First(Fields!B1_MAIL_ADDRESS1.Value, "AccelaDataSet"))+", ")+iif(Len(TRIM(First(Fields!B1_MAIL_ADDRESS2.Value, "AccelaDataSet")))=0,nothing,TRIM(First(Fields!B1_MAIL_ADDRESS2.Value, "AccelaDataSet"))+", ")+iif(Len(TRIM(First(Fields!B1_MAIL_ADDRESS3.Value, "AccelaDataSet")))=0,nothing,TRIM(First(Fields!B1_MAIL_ADDRESS3.Value, "AccelaDataSet"))+", ")+First(Fields!B1_MAIL_CITY.Value, "AccelaDataSet")+", "+First(Fields!B1_MAIL_STATE.Value, "AccelaDataSet")+" "+First(Fields!B1_MAIL_ZIP.Value, "AccelaDataSet")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>B1_OWNER_FULL_NAME</rd:DefaultName>
+            <Top>2.03347in</Top>
+            <Left>0.90499in</Left>
+            <Height>0.25in</Height>
+            <Width>6.29167in</Width>
+            <ZIndex>9</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox8">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>            Notice is hereby given that the City of Knoxville, a municipal corporation with offices located in the City-County Building at 400 Main Avenue, Knoxville, Tennessee, 37902, pursuant to Section 13-147 of the Knoxville City Code, has and claims a lien on a lot at </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(str(Fields!B1_HSE_NBR_START.Value), "AccelaDataSet")+" "+First(Fields!B1_STR_DIR.Value, "AccelaDataSet")+" "+First(Fields!B1_STR_NAME.Value, "AccelaDataSet")+" "+First(Fields!B1_STR_SUFFIX.Value, "AccelaDataSet")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, Knoxville, Knox County, Tennessee, CLT# </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!B1_PARCEL_NBR.Value, "AccelaDataSet")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, to secure payment of a debt due and owing to the City of Knoxville for lot cleaning and/or debris removal provided by the City of Knoxville at said property on  </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=iif(IsNothing(First(Fields!G6_STAT_DD.Value, "AccelaDataSet")),First(Fields!G6_COMPL_DD.Value, "AccelaDataSet"), First(Fields!G6_STAT_DD.Value, "AccelaDataSet"))</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Format>d</Format>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, in the amount of </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Sum(Fields!GF_FEE.Value, "Fees")-Sum(Fields!PAYMENT_AMOUNT.Value, "PAYMENTS")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Format>'$'#,0.00;('$'#,0.00)</Format>
+                      <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, and plus a ten percent (10%) penalty for failure to pay such charge within sixty (60) days after proper billing, and the recording costs associated with the lien in the amount of $24.00, for a total of  </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Sum(Fields!TOTALAMT.Value, "TotalFee")-Sum(Fields!PAYMENT_AMOUNT.Value, "PAYMENTS")</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Format>'$'#,0.00;('$'#,0.00)</Format>
+                      <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, which is certified by </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!MANAGER.Value, "Manager")</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, the </Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!MANAGERTITLE.Value, "ManagerTItle")</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value> for the City of Knoxville, to be a true and correct statement of the debt which remains unpaid. Copies of all documents are filed in the Office of the Plans Review and Inspections Department, Codes Enforcement, City of Knoxville.</Value>
+                    <Style>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox8</rd:DefaultName>
+            <Top>2.78347in</Top>
+            <Left>0.37375in</Left>
+            <Height>2.34375in</Height>
+            <Width>6.82291in</Width>
+            <ZIndex>10</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox15">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Lien certified by </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!MANAGER.Value, "Manager")</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>, </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!MANAGERTITLE.Value, "ManagerTItle")</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value> _______</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Record # </Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=First(Fields!B1_ALT_ID.Value, "AccelaDataSet")</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>FOR PAYOFF INFORMATION, CONTACT THE NEIGHBORHOOD CODES ENFORCEMENT OFFICE AT 865-215-2119.</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Times New Roman</FontFamily>
+                      <FontSize>8pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#000000</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox14</rd:DefaultName>
+            <Top>10.4075in</Top>
+            <Left>0.37375in</Left>
+            <Height>0.68751in</Height>
+            <Width>6.62499in</Width>
+            <ZIndex>11</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <Height>11.22347in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>7.46875in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.8507in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <PageFooter>
+          <Height>0.42583in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <PageHeight>14in</PageHeight>
+        <LeftMargin>0.5in</LeftMargin>
+        <RightMargin>0.5in</RightMargin>
+        <TopMargin>0.25in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <Prompt>ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="KnoxFooter">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>/9j/4AAQSkZJRgABAQEAYABgAAD/4RD+RXhpZgAATU0AKgAAAAgABAE7AAIAAAARAAAISodpAAQAAAABAAAIXJydAAEAAAAiAAAQ1OocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAExld25lcywgQW1iZXIgTi4AAAAFkAMAAgAAABQAABCqkAQAAgAAABQAABC+kpEAAgAAAAMxOAAAkpIAAgAAAAMxOAAA6hwABwAACAwAAAieAAAAABzqAAAACAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAxNTowODowNyAwOToyMDo0MQAyMDE1OjA4OjA3IDA5OjIwOjQxAAAATABlAHcAbgBlAHMALAAgAEEAbQBiAGUAcgAgAE4ALgAAAP/hCyNodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+DQo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIj48cmRm
+OlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSJ1dWlkOmZhZjViZGQ1LWJhM2QtMTFkYS1hZDMxLWQzM2Q3NTE4MmYxYiIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIi8+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iPjx4bXA6Q3JlYXRlRGF0ZT4yMDE1LTA4LTA3VDA5OjIwOjQxLjE4MDwveG1wOkNyZWF0ZURhdGU+PC9yZGY6RGVzY3JpcHRpb24+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5MZXduZXMsIEFtYmVyIE4uPC9yZGY6bGk+PC9yZGY6U2VxPg0KCQkJPC9kYzpjcmVhdG9yPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0ndyc/Pv/bAEMABwUFBgUEBwYFBggHBwgKEQsKCQkKFQ8QDBEYFRoZGBUYFxseJyEbHSUdFxgiLiIlKCkrLCsaIC8zLyoyJyorKv/bAEMBBwgICgkKFAsLFCocGBwqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKv/AABEIAFkCIAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJ
+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</ImageData>
+    </EmbeddedImage>
+    <EmbeddedImage Name="KnoxvilleHeader">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>/9j/4AAQSkZJRgABAQEAYABgAAD/4RD+RXhpZgAATU0AKgAAAAgABAE7AAIAAAARAAAISodpAAQAAAABAAAIXJydAAEAAAAiAAAQ1OocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAExld25lcywgQW1iZXIgTi4AAAAFkAMAAgAAABQAABCqkAQAAgAAABQAABC+kpEAAgAAAAM4NQAAkpIAAgAAAAM4NQAA6hwABwAACAwAAAieAAAAABzqAAAACAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAxNTowOToxNSAxNToyMTo0MgAyMDE1OjA5OjE1IDE1OjIxOjQyAAAATABlAHcAbgBlAHMALAAgAEEAbQBiAGUAcgAgAE4ALgAAAP/hCyNodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+DQo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIj48cmRm
+OlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSJ1dWlkOmZhZjViZGQ1LWJhM2QtMTFkYS1hZDMxLWQzM2Q3NTE4MmYxYiIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIi8+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iPjx4bXA6Q3JlYXRlRGF0ZT4yMDE1LTA5LTE1VDE1OjIxOjQyLjg0NzwveG1wOkNyZWF0ZURhdGU+PC9yZGY6RGVzY3JpcHRpb24+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5MZXduZXMsIEFtYmVyIE4uPC9yZGY6bGk+PC9yZGY6U2VxPg0KCQkJPC9kYzpjcmVhdG9yPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0ndyc/Pv/bAEMABwUFBgUEBwYFBggHBwgKEQsKCQkKFQ8QDBEYFRoZGBUYFxseJyEbHSUdFxgiLiIlKCkrLCsaIC8zLyoyJyorKv/bAEMBBwgICgkKFAsLFCocGBwqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKv/AABEIAHYCmgMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJ
+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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>af0e7565-d095-4255-b599-b1ef2ccadfcb</rd:ReportID>
+</Report>

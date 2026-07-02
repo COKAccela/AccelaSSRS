@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>c682715b-82e5-4477-963f-22678f990c98</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Serv_Prov_Code">
+            <Value>=Parameters!Serv_Prov_Code.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@B1_Per_ID1">
+            <Value>=Parameters!B1_Per_ID1.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@B1_Per_ID2">
+            <Value>=Parameters!B1_Per_ID2.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@B1_Per_ID3">
+            <Value>=Parameters!B1_Per_ID3.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT     dbo.GASSET_MASTER.SERV_PROV_CODE, dbo.GASSET_MASTER.G1_ASSET_SEQ_NBR, 
+                      dbo.GASSET_MASTER.G1_ASSET_ID, dbo.GASSET_MASTER.G1_ASSET_GROUP, dbo.GASSET_MASTER.G1_ASSET_TYPE, 
+                      dbo.GASSET_MASTER.G1_DESCRIPTION, dbo.GASSET_MASTER.G1_COMMENTS,  
+                      dbo.GWORK_ORDER_ASSET.SERV_PROV_CODE AS EXPR2, 
+                      dbo.GWORK_ORDER_ASSET.B1_PER_ID1, dbo.GWORK_ORDER_ASSET.B1_PER_ID2, 
+					  dbo.GWORK_ORDER_ASSET.B1_PER_ID3
+FROM         dbo.GWORK_ORDER_ASSET,dbo.GASSET_MASTER
+WHERE     
+dbo.GWORK_ORDER_ASSET.G1_ASSET_SEQ_NBR = dbo.GWORK_ORDER_ASSET.G1_ASSET_SEQ_NBR AND
+dbo.GWORK_ORDER_ASSET.g1_asset_seq_nbr =  dbo.GASSET_MASTER .g1_asset_seq_nbr  and
+dbo.GWORK_ORDER_ASSET.SERV_PROV_CODE = @Serv_Prov_Code
+AND dbo.GWORK_ORDER_ASSET.B1_PER_ID1 = @B1_Per_ID1
+AND dbo.GWORK_ORDER_ASSET.B1_PER_ID2 = @B1_Per_ID2
+AND dbo.GWORK_ORDER_ASSET.B1_PER_ID3 = @B1_Per_ID3</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="SERV_PROV_CODE">
+          <DataField>SERV_PROV_CODE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G1_ASSET_SEQ_NBR">
+          <DataField>G1_ASSET_SEQ_NBR</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="G1_ASSET_ID">
+          <DataField>G1_ASSET_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G1_ASSET_GROUP">
+          <DataField>G1_ASSET_GROUP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G1_ASSET_TYPE">
+          <DataField>G1_ASSET_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G1_DESCRIPTION">
+          <DataField>G1_DESCRIPTION</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="G1_COMMENTS">
+          <DataField>G1_COMMENTS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="EXPR2">
+          <DataField>EXPR2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID1">
+          <DataField>B1_PER_ID1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID2">
+          <DataField>B1_PER_ID2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID3">
+          <DataField>B1_PER_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.72395in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>4.47395in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="G1_ASSET_TYPE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!G1_ASSET_TYPE.Value</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                                <TextRun>
+                                  <Value>:</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>G1_ASSET_TYPE</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="G1_DESCRIPTION">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!G1_ASSET_ID.Value</Value>
+                                  <Style>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>G1_DESCRIPTION</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>7.1979in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.22375in</Height>
+        <Style />
+      </Body>
+      <Width>7.30209in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="Serv_Prov_Code">
+      <DataType>String</DataType>
+      <Prompt>Serv Prov Code</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="B1_Per_ID1">
+      <DataType>String</DataType>
+      <Prompt>B1 Per ID1</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="B1_Per_ID2">
+      <DataType>String</DataType>
+      <Prompt>B1 Per ID2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="B1_Per_ID3">
+      <DataType>String</DataType>
+      <Prompt>B1 Per ID3</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>Serv_Prov_Code</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>B1_Per_ID1</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>B1_Per_ID2</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>B1_Per_ID3</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://mtsup-ssrs-0.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>84ec81d0-cd32-4ecf-9f26-062f6d452d2b</rd:ReportID>
+</Report>

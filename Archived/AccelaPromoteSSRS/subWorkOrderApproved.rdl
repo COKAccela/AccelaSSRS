@@ -1,0 +1,454 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>cf8c77eb-fb93-4bd4-9bde-b7fcd59b414a</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH WO_PS_WO_VW
+AS
+
+(
+SELECT a.SERV_PROV_CODE AS SERV_PROV_CODE,
+    a.rec_ful_nam AS REC_FUL_NAM,
+    a.B1_PER_ID1 AS B1_PER_ID1,
+    a.B1_PER_ID2 AS B1_PER_ID2,
+    a.B1_PER_ID3 AS B1_PER_ID3,
+    h.PARENT_RECORD_ID AS SERVICE_REQUEST_NUM,
+    a.B1_ALT_ID AS WO_NUM,
+    ab.B1_CHECKLIST_COMMENT AS WORK_CENTER,
+    ad.b1_asgn_staff AS ASSIGNED_TO,
+    adx.R3_SUBGROUP_DESC AS ASSIGNED_GROUP_DESCR,
+    aa.B1_CHECKLIST_COMMENT AS WORK_ORDER_TYPE_CODE,
+    --TO_CHAR(NVL(b.B1_HSE_NBR_START,'0')) AS STREET_NUMBER,
+    --NVL(b.B1_STR_PREFIX,' ') AS STREET_NAME_PREFIX,
+    --NVL(b.B1_STR_NAME,' ') AS STREET_NAME,
+    --NVL(b.B1_STR_SUFFIX,' ') AS STREET_NAME_SUFFIX,
+    --TRIM(TO_CHAR(NVL(b.B1_HSE_NBR_START,'0'))
+    --|| ' '
+    --|| TRIM (NVL(b.B1_STR_DIR,' ')
+    --|| ' '
+    --|| NVL(b.B1_STR_NAME,' '))
+    --|| ' '
+    --|| NVL(b.B1_STR_SUFFIX,' ')) ADDRESS,
+	ISNULL(b.B1_HSE_NBR_START,'0') AS STREET_NUMBER,
+    ISNULL(b.B1_STR_PREFIX,' ') AS STREET_NAME_PREFIX,
+    ISNULL(b.B1_STR_NAME,' ') AS STREET_NAME,
+    ISNULL(b.B1_STR_SUFFIX,' ') AS STREET_NAME_SUFFIX,
+	TRIM(ISNULL(CONVERT(VARCHAR(10), b.B1_HSE_NBR_START), '0')) + ' ' +
+     TRIM(ISNULL(b.B1_STR_DIR, ' ')) + ' ' +
+     TRIM(ISNULL(b.B1_STR_NAME, ' ')) + ' ' +
+     TRIM(ISNULL(b.B1_STR_SUFFIX, ' ')) AS ADDRESS,
+    --NVL(servicearea.B1_CHECKLIST_COMMENT,'Unknown') WDA_1_VALUE,
+    --NVL(councildistrict.B1_CHECKLIST_COMMENT,'Unknown') WDA_2_VALUE,
+	ISNULL(servicearea.B1_CHECKLIST_COMMENT,'Unknown') AS WDA_1_VALUE,
+    ISNULL(councildistrict.B1_CHECKLIST_COMMENT,'Unknown') AS WDA_2_VALUE,
+    ' ' WDA_3_VALUE,
+    a.REC_DATE CREATED_DATE,
+    d.B1_ASGN_DEPT GROUP_NAME,
+    e.R3_SUBGROUP_DESC SR_GROUP_DESC,
+    --DECODE(NVL(a.B1_APPL_STATUS,'OPEN'),'Completed','CLOSED','OPEN') STATUS_CODE,
+    --DECODE(NVL(a.B1_APPL_STATUS,'OPEN'), 'Completed', 'C', 'Closed', 'C','O') STATUS_ABBR,
+	CASE ISNULL(a.B1_APPL_STATUS,'OPEN')
+		WHEN 'Completed' THEN 'CLOSED'
+		ELSE 'OPEN' END AS STATUS_CODE,
+    CASE ISNULL(a.B1_APPL_STATUS,'OPEN')
+		WHEN 'Completed' THEN 'C'
+		WHEN 'Closed' THEN 'C'
+		ELSE 'O' END AS STATUS_ABBR,
+    a.B1_APPL_STATUS_DATE AS STATUS_DATE,
+    a.B1_PER_TYPE AS TYPE_NAME,
+    ' ' DETAILS,
+    --NVL(C.R1_DUE_DAY,1) DURATIONS_DAYS,
+	ISNULL(C.R1_DUE_DAY,1) DURATIONS_DAYS,
+    a.B1_PER_TYPE COK_DESCRIPTION,
+    a.B1_APPL_STATUS,
+    ' ' COK_DESCRIPTION3,
+    CASE
+      --WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+      --AND ROUND((sysdate-a.REC_DATE+.5),1)             &gt; NVL(C.R1_DUE_DAY,1)
+	  WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+      AND ROUND(DATEDIFF(DAY,a.REC_DATE,GETDATE()+0.5),1)             &gt; ISNULL(C.R1_DUE_DAY,1)
+      THEN 1
+      ELSE 0
+    END AS current_overdue,
+    CASE
+      --WHEN ROUND((sysdate-a.REC_DATE+.5),1) &gt; NVL(C.R1_DUE_DAY,1)
+	  WHEN ROUND(DATEDIFF(DAY,a.REC_DATE,GETDATE()+0.5),1)             &gt; ISNULL(C.R1_DUE_DAY,1)
+      THEN 1
+      ELSE 0
+    END AS overdue,
+    CASE
+      --WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1) = 'C'
+      --THEN (to_date(TO_CHAR(a.B1_APPL_STATUS_DATE, 'mm/dd/yyyy'),'mm/dd/yyyy')-to_date(TO_CHAR(a.REC_DATE, 'mm/dd/yyyy'),'mm/dd/yyyy')+.5)
+      WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1) = 'C'
+      THEN (DATEDIFF(DAY, CONVERT(DATE, a.REC_DATE), CONVERT(DATE, a.B1_APPL_STATUS_DATE)) + 0.5)
+      ELSE 0
+    END AS response,
+    CASE
+      --WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+      --AND ROUND((sysdate-a.REC_DATE+.5),1)             &gt; NVL(C.R1_DUE_DAY,1)
+	  WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+      AND ROUND(DATEDIFF(DAY,a.REC_DATE,GETDATE()+0.5),1)             &gt; ISNULL(C.R1_DUE_DAY,1)
+      THEN 1
+      --WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1)    = 'C'
+      --AND ROUND((a.B1_APPL_STATUS_DATE-a.REC_DATE+.5),1) &gt; NVL(C.R1_DUE_DAY,1)
+	   WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1)    = 'C'
+      AND ROUND((DATEDIFF(DAY, CONVERT(DATE, a.REC_DATE), CONVERT(DATE, a.B1_APPL_STATUS_DATE)) + 0.5),1) &gt; ISNULL(C.R1_DUE_DAY,1)
+      THEN 1
+      ELSE 0
+    END AS overduration,
+    CASE
+    --  WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+    --  THEN (to_date(TO_CHAR(sysdate, 'mm/dd/yyyy'),'mm/dd/yyyy')-to_date(TO_CHAR(a.REC_DATE, 'mm/dd/yyyy'),'mm/dd/yyyy')+.5)
+    --  WHEN SUBSTR(NVL(a.B1_APPL_STATUS,'OPEN'), 1, 1) = 'C'
+    --  THEN (to_date(TO_CHAR(a.B1_APPL_STATUS_DATE, 'mm/dd/yyyy'),'mm/dd/yyyy')-to_date(TO_CHAR(a.REC_DATE, 'mm/dd/yyyy'),'mm/dd/yyyy')+.5)
+    WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1) &lt;&gt; 'C'
+      THEN DATEDIFF(DAY,CONVERT(DATE,a.REC_DATE,101),GETDATE()+.5)
+      WHEN SUBSTRING(ISNULL(a.B1_APPL_STATUS,'OPEN'), 1, 1) = 'C'
+      THEN (DATEDIFF(DAY, CONVERT(DATE, a.REC_DATE,101), CONVERT(DATE, a.B1_APPL_STATUS_DATE,101)) + 0.5)
+    
+	END AS daysopen,
+    ' ' GEO_AREA_CODE,
+    ' ' GEO_AREA_VALUE,
+    ' ' part_geo_area_value,
+    NULL updated_date,
+    --NVL(j.G1_ASSET_ID, ' ') AS Location,
+	ISNULL(j.G1_ASSET_ID, ' ') AS Location,
+    f.r3_bureau_des,
+    g.r3_division_des,
+    e.r3_dept_key,
+    ad.b1_actual_prod_units
+  FROM B1PERMIT a 
+  LEFT JOIN BCHCKBOX aa ON aa.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND aa.B1_PER_ID1  = a.B1_PER_ID1
+	  AND aa.B1_PER_ID2  = a.B1_PER_ID2
+	  AND aa.B1_PER_ID3  = a.B1_PER_ID3
+	  AND aa.B1_CHECKBOX_DESC = 'Work Order Type'
+  LEFT JOIN BCHCKBOX ab ON ab.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND ab.B1_PER_ID1 = a.B1_PER_ID1
+	  AND ab.B1_PER_ID2 = a.B1_PER_ID2
+	  AND ab.B1_PER_ID3 = a.B1_PER_ID3
+	  AND ab.B1_CHECKBOX_DESC = 'Work Center'
+  LEFT JOIN BPERMIT_DETAIL ad ON ad.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND ad.B1_PER_ID1 = a.B1_PER_ID1
+	  AND ad.B1_PER_ID2 = a.B1_PER_ID2
+	  AND ad.B1_PER_ID3 = a.B1_PER_ID3
+  LEFT JOIN G3DPTTYP adx ON adx.R3_DEPT_KEY = ad.B1_ASGN_DEPT
+  LEFT JOIN B3ADDRES b ON b.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND b.B1_PER_ID1 = a.B1_PER_ID1
+	  AND b.B1_PER_ID2 = a.B1_PER_ID2
+	  AND b.B1_PER_ID3 = a.B1_PER_ID3
+	  AND b.B1_PRIMARY_ADDR_FLG = 'Y'
+  LEFT JOIN R3APPTYP c ON c.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND c.R1_PER_GROUP = a.B1_PER_GROUP
+	  AND c.R1_PER_TYPE = a.B1_PER_TYPE
+	  AND c.R1_PER_SUB_TYPE = a.B1_PER_SUB_TYPE
+	  AND c.R1_PER_CATEGORY = a.B1_PER_CATEGORY
+  LEFT JOIN BPERMIT_DETAIL d ON d.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND d.B1_PER_ID1 = a.B1_PER_ID1
+	  AND d.B1_PER_ID2 = a.B1_PER_ID2
+	  AND d.B1_PER_ID3 = a.B1_PER_ID3
+  LEFT JOIN g3dpttyp e ON e.r3_dept_key = d.b1_asgn_dept
+  LEFT JOIN r3bureau f ON f.R3_AGENCY_CODE = e.R3_AGENCY_CODE
+	  AND f.r3_bureau_code = e.r3_bureau_code
+	  AND f.serv_prov_code = e.serv_prov_code
+  LEFT JOIN r3divisn g ON  G.R3_AGENCY_CODE = e.R3_AGENCY_CODE
+	  AND G.R3_DIVISION_CODE = E.R3_DIVISION_CODE
+	  AND G.SERV_PROV_CODE = E.SERV_PROV_CODE
+  LEFT JOIN v_related_record h ON h.CHILD_RECORD_ID = a.B1_ALT_ID
+	AND h.PARENT_RECORD_ID like 'SR%'
+  LEFT JOIN BCHCKBOX servicearea ON servicearea.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND servicearea.B1_PER_ID1 = a.B1_PER_ID1
+	  AND servicearea.B1_PER_ID2 = a.B1_PER_ID2
+	  AND servicearea.B1_PER_ID3 = a.B1_PER_ID3
+	  AND servicearea.B1_CHECKBOX_DESC = 'Service Area'
+  LEFT JOIN BCHCKBOX councildistrict ON councildistrict.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND councildistrict.B1_PER_ID1 = a.B1_PER_ID1
+	  AND councildistrict.B1_PER_ID2 = a.B1_PER_ID2
+	  AND councildistrict.B1_PER_ID3 = a.B1_PER_ID3
+	  AND councildistrict.B1_CHECKBOX_DESC = 'Council District'
+  LEFT JOIN gwork_order_asset i ON i.SERV_PROV_CODE = a.SERV_PROV_CODE
+	  AND i.B1_PER_ID1 = a.B1_PER_ID1
+	  AND i.B1_PER_ID2 = a.B1_PER_ID2
+	  AND i.B1_PER_ID3 = a.B1_PER_ID3
+  LEFT JOIN gasset_master j ON j.SERV_PROV_CODE = i.SERV_PROV_CODE
+	AND j.G1_ASSET_SEQ_NBR = i.G1_ASSET_SEQ_NBR
+  WHERE a.B1_PER_TYPE                      = 'Work Order'
+  AND a.B1_PER_SUB_TYPE                    = 'Public Service'
+  AND a.B1_APPL_STATUS                    &lt;&gt; 'Canceled'
+  AND a.B1_ALT_ID = @ID
+)
+
+SELECT B.Work_Order_Type_Code, 
+A.RECORD_ID, 
+A.RECORD_OPEN_DATE, 
+A.RECORD_STATUS, 
+A.RECORD_STATUS_DATE, 
+A.UPDATED_BY, 
+A.UPDATED_DATE, 
+A.ACTION_BY_NAME_FML#, 
+A.STATUS, 
+A.TASK, 
+A.TASK_IS_ACTIVE,TASK_IS_COMPLETE
+FROM V_WORKFLOW_HISTORY A
+LEFT JOIN WO_PS_WO_VW B ON A.RECORD_ID = B.WO_NUM AND
+B.Work_Order_Type_Code= 'PS52 Engineering Construction' 
+WHERE   A.ACTION_BY_DEPT in ('Stormwater', 'Public Service Work Order') AND 
+A.PROCESS_NAME in ('WO_SW', 'WO_PUB_SER') AND 
+A.TASK LIKE '%Setup Work Order%' AND
+A.STATUS in ('Approved', 'SW Approved') AND
+A.TASK_IS_COMPLETE = 'Y' AND
+(A.RECORD_ID = @ID)
+and a.AGENCY_ID='KNOXVILLE'</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="RECORD_ID">
+          <DataField>RECORD_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="WORK_ORDER_TYPE_CODE">
+          <DataField>Work_Order_Type_Code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ACTION_BY_NAME_FML_">
+          <DataField>ACTION_BY_NAME_FML#</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_OPEN_DATE">
+          <DataField>RECORD_OPEN_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS">
+          <DataField>RECORD_STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS_DATE">
+          <DataField>RECORD_STATUS_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_BY">
+          <DataField>UPDATED_BY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_DATE">
+          <DataField>UPDATED_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="STATUS">
+          <DataField>STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK">
+          <DataField>TASK</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK_IS_ACTIVE">
+          <DataField>TASK_IS_ACTIVE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK_IS_COMPLETE">
+          <DataField>TASK_IS_COMPLETE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.89583in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.35in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.49375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="STATUS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!STATUS.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>STATUS</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="UPDATED_BY">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UPDATED_BY.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>UPDATED_BY</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UPDATED_DATE.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>g</Format>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>3.73958in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.21in</Height>
+        <Style />
+      </Body>
+      <Width>3.73958in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <Prompt>ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>c9368920-96d3-4076-be24-c9a8df70bb4c</rd:ReportID>
+</Report>

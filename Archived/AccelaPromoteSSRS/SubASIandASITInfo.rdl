@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>ef429e72-beca-4208-953d-f34061577c25</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@RECORD_ID">
+            <Value>=Parameters!RECORD_ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+   
+    A.B1_CHECKBOX_DESC     AS ATTRIBUTE,
+    A.B1_CHECKLIST_COMMENT AS VALUE,
+    B.B1_ALT_ID        AS RECORD_ID,
+	A.B1_CHECKBOX_TYPE AS A_GROUP
+    FROM BCHCKBOX A,
+    B1PERMIT B
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  and a.SERV_PROV_CODE = b.SERV_PROV_CODE
+  AND  B.B1_ALT_ID = @RECORD_ID
+  and b.SERV_PROV_CODE='KNOXVILLE'
+  --WHERE A.REC_STATUS = 'A'
+  -- Combine the ASIT Data
+  UNION ALL
+  SELECT A.SERV_PROV_CODE AS AGENCY_ID,
+    A.COLUMN_NAME     AS ATTRIBUTE,
+    A.ATTRIBUTE_VALUE AS VALUE,
+    B.B1_ALT_ID       AS RECORD_ID,
+     A.TABLE_NAME
+  FROM BAPPSPECTABLE_VALUE A,
+    B1PERMIT B,
+    BAPPSPECTABLE C
+  WHERE b.b1_per_id1 = a.b1_per_id1
+  AND b.b1_per_id2   = a.b1_per_id2
+  AND b.b1_per_id3   = a.b1_per_id3
+  AND c.b1_per_id1   = a.b1_per_id1
+  AND c.b1_per_id2   = a.b1_per_id2
+  AND c.b1_per_id3   = a.b1_per_id3
+  and   a.SERV_PROV_CODE = b.SERV_PROV_CODE
+   and   a.SERV_PROV_CODE = c.SERV_PROV_CODE
+  and a.table_name = c.table_name
+  and a.column_name = c.column_name
+  AND A.REC_STATUS   = 'A' 
+  and b.SERV_PROV_CODE='KNOXVILLE'
+ AND  B.B1_ALT_ID = @RECORD_ID</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="AGENCY_ID">
+          <DataField>AGENCY_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ATTRIBUTE">
+          <DataField>ATTRIBUTE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="VALUE">
+          <DataField>VALUE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_ID">
+          <DataField>RECORD_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="A_GROUP">
+          <DataField>A_GROUP</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ATTRIBUTE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ATTRIBUTE.Value</Value>
+                                  <Style />
+                                </TextRun>
+                                <TextRun>
+                                  <Value> --|-- </Value>
+                                  <Style />
+                                </TextRun>
+                                <TextRun>
+                                  <Value>=Fields!VALUE.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ATTRIBUTE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>3</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <SortExpressions>
+              <SortExpression>
+                <Value>=Fields!ATTRIBUTE.Value</Value>
+              </SortExpression>
+            </SortExpressions>
+            <Height>0.25in</Height>
+            <Width>6in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>0.26042in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>6in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="RECORD_ID">
+      <DataType>String</DataType>
+      <Prompt>RECORD ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>RECORD_ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>ecc3f6e5-daf1-442f-a4fc-1f182a30c335</rd:ReportID>
+</Report>

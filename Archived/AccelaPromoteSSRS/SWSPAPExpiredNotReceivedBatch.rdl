@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="AccelaTest">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>73db8fd1-a6a4-4bc5-8d57-a144fe5038cc</rd:DataSourceID>
+    </DataSource>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>a02572f4-9a8b-4f4e-a5aa-2bcf9c287e3f</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@setId">
+            <Value>=Parameters!setId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT a.b1_alt_id,
+a.SERV_PROV_CODE,
+    a.B1_PER_ID1,
+    a.B1_PER_ID2,
+    a.B1_PER_ID3,
+    c.B1_FNAME,
+    isnull(c.B1_MNAME,' ' ) B1_MNAME,
+    c.B1_LNAME,
+c.b1_full_name,
+c.b1_address1, c.b1_city, c.b1_state, c.b1_zip
+FROM
+B1PERMIT a
+INNER JOIN BPERMIT_DETAIL aa ON
+	aa.serv_prov_code = a.serv_prov_code and
+	aa.b1_per_id1 = a.b1_per_id1 and
+	aa.b1_per_id2 = a.b1_per_id2 and
+	aa.b1_per_id3 = a.b1_per_id3 
+LEFT OUTER JOIN B3CONTACT c ON
+  c.SERV_PROV_CODE  = a.SERV_PROV_CODE
+  AND c.B1_PER_ID1      = a.B1_PER_ID1
+  AND c.B1_PER_ID2      = a.B1_PER_ID2
+  AND c.B1_PER_ID3      = a.B1_PER_ID3
+  AND c.b1_contact_type    = 'Applicant'
+INNER JOIN SETDETAILS ON
+	SETDETAILS.SERV_PROV_CODE = a.SERV_PROV_CODE AND 
+    SETDETAILS.B1_PER_ID1 = a.B1_PER_ID1 AND 
+    SETDETAILS.B1_PER_ID2 = a.B1_PER_ID2 AND 
+    SETDETAILS.B1_PER_ID3 = a.B1_PER_ID3
+
+where
+a.b1_per_group = 'Permits' and
+a.b1_per_type = 'Stormwater' and
+a.b1_per_sub_type = 'SPAP' and
+a.b1_per_category = 'NA' and
+a.b1_appl_status in  ('Active', 'Expired')  
+and a.SERV_PROV_CODE='SW-SPAP-04-023'
+AND  (SETDETAILS.SET_ID = convert(varchar, @setId))</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_FNAME">
+          <DataField>B1_FNAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SERV_PROV_CODE">
+          <DataField>SERV_PROV_CODE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID1">
+          <DataField>B1_PER_ID1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID2">
+          <DataField>B1_PER_ID2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_LNAME">
+          <DataField>B1_LNAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID3">
+          <DataField>B1_PER_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_ADDRESS1">
+          <DataField>b1_address1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_CITY">
+          <DataField>b1_city</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_STATE">
+          <DataField>b1_state</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_ZIP">
+          <DataField>b1_zip</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_MNAME">
+          <DataField>B1_MNAME</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_FULL_NAME">
+          <DataField>b1_full_name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet2">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT a.b1_alt_id, b.first_issued_date, c.b1_checklist_comment last_annual_inspection 
+FROM
+B1PERMIT a
+INNER JOIN BPERMIT_DETAIL b ON
+	b.serv_prov_code = a.serv_prov_code and
+	b.b1_per_id1 = a.b1_per_id1 and
+	b.b1_per_id2 = a.b1_per_id2 and
+	b.b1_per_id3 = a.b1_per_id3 
+LEFT OUTER JOIN BCHCKBOX c ON
+	c.serv_prov_code  = a.serv_prov_code and
+	c.b1_per_id1  = a.b1_per_id1 and
+	c.b1_per_id2  = a.b1_per_id2 and
+	c.b1_per_id3  = a.b1_per_id3 and
+	c.b1_checkbox_desc  = 'Last Annual Inspection' AND
+	convert(DATETIME, isnull(c.b1_checklist_comment ,'01/01/1950')) &lt; dateadd(month, -3, getdate())
+where
+a.b1_per_group = 'Enforcement' and
+a.b1_per_type = 'Stormwater' and
+a.b1_per_sub_type = 'SPAP' and
+a.b1_per_category = 'NA' and
+a.b1_appl_status = 'Active' and
+dateadd(month, 12, isnull(b.first_issued_date,convert(DATETIME, '01/01/1950'))) &lt; convert(DATETIME, '01/01/' + isnull(convert(varchar, cast(convert(varchar(4), getdate(),112) as float) + 1), ''))   
+</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>b1_alt_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="FIRST_ISSUED_DATE">
+          <DataField>first_issued_date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="LAST_ANNUAL_INSPECTION">
+          <DataField>last_annual_inspection</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.96507in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.18035in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.47917in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=  iif(len(Fields!B1_LNAME.Value) &gt;3, Ucase(Fields!B1_FNAME.Value) + IIF(Fields!B1_MNAME.Value = " ", Ucase(Fields!B1_MNAME.Value), " " + Ucase(Fields!B1_MNAME.Value) +" ") +  ucase(Fields!B1_LNAME.Value) +  "&lt;br&gt;" ,"&lt;br&gt;"  )
++ IIF(len(Fields!B1_FULL_NAME.Value)&gt; 3, mid(Fields!B1_FULL_NAME.Value,1,25) + "&lt;br&gt;" ,"")
++ Fields!B1_ADDRESS1.Value +  "&lt;br&gt;"
++ Fields!B1_CITY.Value+ " " + Fields!B1_STATE.Value + " " + Fields!B1_ZIP.Value</Value>
+                                  <MarkupType>HTML</MarkupType>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=mid(Fields!B1_ALT_ID.Value,4,4) + "# " + mid(Fields!B1_ALT_ID.Value,9,7)</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="B1_ALT_ID">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!B1_ALT_ID.Value</GroupExpression>
+                    </GroupExpressions>
+                    <PageBreak>
+                      <BreakLocation>Between</BreakLocation>
+                    </PageBreak>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!B1_ALT_ID.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.54145in</Size>
+                    <CellContents>
+                      <Textbox Name="B1_ALT_ID">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!B1_ALT_ID.Value</Value>
+                                <Style />
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>B1_ALT_ID</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>true</Hidden>
+                        </Visibility>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="Details" />
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <DataSetName>DataSet1</DataSetName>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <Top>0.02542in</Top>
+            <Left>1.80146in</Left>
+            <Height>0.47917in</Height>
+            <Width>3.68687in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>0.50459in</Height>
+        <Style />
+      </Body>
+      <Width>5.48833in</Width>
+      <Page>
+        <PageHeader>
+          <Height>1.40625in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <PageHeight>4in</PageHeight>
+        <PageWidth>6in</PageWidth>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.15in</TopMargin>
+        <BottomMargin>0.25in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="setId">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>18-CAP-00012</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>setId</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>setId</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>338beb71-0709-46fb-b975-278442787d84</rd:ReportID>
+</Report>

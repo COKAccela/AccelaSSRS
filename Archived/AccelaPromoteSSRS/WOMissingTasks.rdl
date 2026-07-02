@@ -1,0 +1,952 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>DataBase</rd:SecurityType>
+      <rd:DataSourceID>23c5c59b-84cf-4820-8944-9af07fd9d092</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <CommandText>SELECT     WO_NUM, ASSIGNED_GROUP_DESCR AS ORGAN, ASSIGNED_TO, WO_CREATED_DATE AS CREATED, isnull(G1_TASK_CODE, 'None') as TASK, 
+			B1_APPL_STATUS as STATUS, B1_PER_ID3,
+		  -- isnull(XXCOK.COK_GET_PROD_UNITS( WO_PS_TASKS_VW.SERV_PROV_CODE,  WO_PS_TASKS_VW.B1_PER_ID1,  WO_PS_TASKS_VW.B1_PER_ID2,  WO_PS_TASKS_VW.B1_PER_ID3), 0) AS PROD_UNITS, 
+		  isnull((select
+			SUM(try_convert(float,isnull(TD.ATTRIBUTE_VALUE,'0')))   
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Quantity' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' ' 
+			),0) AS PROD_UNITS, 
+			--isnull(XXCOK.COK_GET_ASI_COUNT( WO_PS_TASKS_VW.SERV_PROV_CODE,  WO_PS_TASKS_VW.B1_PER_ID1,  WO_PS_TASKS_VW.B1_PER_ID2,  WO_PS_TASKS_VW.B1_PER_ID3, 'Date'),0) AS DATE_UNITS,
+			isnull((select
+			count (0)  
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Date' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '),0) AS DATE_UNITS,
+			--isnull(XXCOK.COK_GET_ASI_COUNT( WO_PS_TASKS_VW.SERV_PROV_CODE,  WO_PS_TASKS_VW.B1_PER_ID1,  WO_PS_TASKS_VW.B1_PER_ID2,  WO_PS_TASKS_VW.B1_PER_ID3, 'Task'),0) AS TASK_UNITS,
+			isnull((select
+			count (0)  
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Task' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '),0) AS TASK_UNITS,
+			--isnull(XXCOK.COK_GET_ASI_COUNT( WO_PS_TASKS_VW.SERV_PROV_CODE,  WO_PS_TASKS_VW.B1_PER_ID1,  WO_PS_TASKS_VW.B1_PER_ID2,  WO_PS_TASKS_VW.B1_PER_ID3, 'Quantity'),0) AS QTY_UNITS
+			isnull((select
+			count (0)  
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Quantity' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '),0) AS QTY_UNITS
+FROM        (SELECT a.SERV_PROV_CODE,
+    a.B1_PER_ID1,
+    a.B1_PER_ID2,
+    a.B1_PER_ID3,
+    a.B1_ALT_ID WO_NUM,
+    aa.B1_CHECKLIST_COMMENT WORK_ORDER_TYPE_CODE,
+    ad.B1_ASGN_DEPT ASSIGNED_GROUP,
+    adx.R3_SUBGROUP_DESC ASSIGNED_GROUP_DESCR,
+    ad.B1_ASGN_STAFF ASSIGNED_TO,
+    a.B1_PER_GROUP,
+    a.B1_PER_TYPE,
+    a.B1_PER_SUB_TYPE,
+    a.B1_PER_CATEGORY,
+    a.REC_DATE CREATED_DATE,
+    a.REC_DATE WO_CREATED_DATE,
+    a.REC_STATUS WO_REC_STATUS,
+    a.REC_STATUS STATUS_CODE,
+    a.REC_FUL_NAM,
+    c.G1_TASK_CODE,
+    isnull(ad.B1_ACTUAL_PROD_UNITS,0) B1_ACTUAL_PROD_UNITS,
+    c.REC_DATE TASK_CREATED_DATE,
+    c.REC_STATUS TASK_REC_STATUS,
+    c.G1_COMPLETE,
+    c.G1_COMPLETE_DATE,
+    c.G1_ESTIMATE,
+    c.G1_ACTUAL,
+    c.G1_DESCRIPTION,
+    c.G1_COMMENTS,
+    c.g1_task_Total_cost,
+    (isnull(b.B1_HSE_NBR_START,'0')) STREET_NUMBER,
+    b.B1_STR_PREFIX STREET_NAME_PREFIX,
+    b.B1_STR_NAME STREET_NAME,
+    b.B1_STR_SUFFIX STREET_NAME_SUFFIX,
+    ' ' WDA_1_VALUE,
+    ' ' WDA_2_VALUE,
+    ' ' WDA_3_VALUE,
+    ' ' GROUP_NAME,
+    ' ' SR_GROUP_DESC,
+    a.B1_APPL_STATUS,
+    a.B1_APPL_STATUS_DATE STATUS_DATE,
+    ' ' TYPE_NAME,
+    ' ' DETAILS,
+    ' ' COK_DESCRIPTION,
+    ' ' COK_DESCRIPTION3,
+    0 Response,
+    0 CURRENT_OVERDUE,
+    0 OVERDURATION,
+    0 DAYSOPEN,
+    ' ' GEO_AREA_CODE,
+    ' ' GEO_AREA_VALUE,
+    ' ' PART_GEO_AREA_VALUE,
+    NULL UPDATED_DATE
+  FROM B1PERMIT a 
+  LEFT JOIN  BPERMIT_DETAIL ad 
+				  ON ad.SERV_PROV_CODE   = a.SERV_PROV_CODE
+				  AND ad.B1_PER_ID1    = a.B1_PER_ID1
+				  AND ad.B1_PER_ID2    = a.B1_PER_ID2
+				  AND ad.B1_PER_ID3    = a.B1_PER_ID3
+  LEFT JOIN 
+    G3DPTTYP adx   ON adx.R3_DEPT_KEY  = ad.B1_ASGN_DEPT
+	LEFT JOIN 
+    BCHCKBOX aa  ON aa.SERV_PROV_CODE = a.SERV_PROV_CODE
+					  AND aa.B1_PER_ID1  = a.B1_PER_ID1
+					  AND aa.B1_PER_ID2  = a.B1_PER_ID2
+					  AND aa.B1_PER_ID3  = a.B1_PER_ID3
+					  AND aa.B1_CHECKBOX_DESC  = 'Work Order Type'
+	LEFT JOIN 
+    B3ADDRES b ON b.SERV_PROV_CODE   = a.SERV_PROV_CODE
+					  AND b.B1_PER_ID1  = a.B1_PER_ID1
+					  AND b.B1_PER_ID2  = a.B1_PER_ID2
+					  AND b.B1_PER_ID3  = a.B1_PER_ID3
+					  AND b.B1_PRIMARY_ADDR_FLG = 'Y'
+	LEFT JOIN 
+    GWORK_ORDER_TASK c  ON c.SERV_PROV_CODE    = a.SERV_PROV_CODE
+					  AND c.B1_PER_ID1    = a.B1_PER_ID1
+					  AND c.B1_PER_ID2    = a.B1_PER_ID2
+					  AND c.B1_PER_ID3    = a.B1_PER_ID3
+	 	 
+ 
+  WHERE a.B1_PER_TYPE           = 'Work Order'
+  AND a.SERV_PROV_CODE = 'KNOXVILLE'
+  AND a.B1_PER_SUB_TYPE         = 'Public Service'
+  and  (a.B1_APPL_STATUS = 'Completed') 
+  AND  a.B1_ALT_ID not in ('WO-PS-16-000765')  
+  )WO_PS_TASKS_VW
+WHERE    
+
+((G1_TASK_CODE IS NULL) OR
+
+(
+--isnull(XXCOK.COK_GET_ASI_COUNT(XXCOK.WO_PS_TASKS_VW.SERV_PROV_CODE, XXCOK.WO_PS_TASKS_VW.B1_PER_ID1, XXCOK.WO_PS_TASKS_VW.B1_PER_ID2, XXCOK.WO_PS_TASKS_VW.B1_PER_ID3, 'Task'),0)
+isnull((select
+			count (0)  
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Task' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '),0) 
+&lt; 
+--isnull(XXCOK.COK_GET_ASI_COUNT(XXCOK.WO_PS_TASKS_VW.SERV_PROV_CODE, XXCOK.WO_PS_TASKS_VW.B1_PER_ID1, XXCOK.WO_PS_TASKS_VW.B1_PER_ID2, XXCOK.WO_PS_TASKS_VW.B1_PER_ID3, 'Date'),0) 
+isnull((select
+			count (0)  
+			 FROM 
+			--ACCELA.GWORK_ORDER_TASK W,
+			BAPPSPECTABLE_VALUE TD
+			 WHERE
+			--W.G1_TASK_CODE = p_TASK_CODE
+			 TD.SERV_PROV_CODE = WO_PS_TASKS_VW.SERV_PROV_CODE
+			AND TD.B1_PER_ID1 = WO_PS_TASKS_VW.B1_PER_ID1
+			AND TD.B1_PER_ID2 = WO_PS_TASKS_VW.B1_PER_ID2
+			AND TD.B1_PER_ID3 = WO_PS_TASKS_VW.B1_PER_ID3
+			AND TD.GROUP_NAME = 'WO_APU'
+			AND TD.TABLE_NAME = 'ACTUAL PRODUCTION UNITS'
+			AND TD.COLUMN_NAME = 'Date' 
+			AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '),0) 
+) 
+AND G1_TASK_CODE in (select emse_step from v_standard_Choice where item_name = 'WO_TASKS_FOR_PRODUCTION_UNITS'))
+
+order by WO_NUM</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="WO_NUM">
+          <DataField>WO_NUM</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ORGAN">
+          <DataField>ORGAN</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ASSIGNED_TO">
+          <DataField>ASSIGNED_TO</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CREATED">
+          <DataField>CREATED</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="TASK">
+          <DataField>TASK</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="STATUS">
+          <DataField>STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PROD_UNITS">
+          <DataField>PROD_UNITS</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID3">
+          <DataField>B1_PER_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DATE_UNITS">
+          <DataField>DATE_UNITS</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="TASK_UNITS">
+          <DataField>TASK_UNITS</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="QTY_UNITS">
+          <DataField>QTY_UNITS</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.40625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.125in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.83208in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.72917in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.80208in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.53125in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>WO NUM</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>ORGAN</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox3</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>ASSIGNED TO</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox4</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>CREATED</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox5</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>ASI RECS</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>ASI TASKS</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>WO TASK</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox6</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="WO_NUM">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!WO_NUM.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>WO_NUM</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ASSIGNED_GROUP_DESCR">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ORGAN.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ASSIGNED_GROUP_DESCR</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ASSIGNED_TO">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ASSIGNED_TO.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ASSIGNED_TO</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="WO_CREATED_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CREATED.Value</Value>
+                                  <Style>
+                                    <Format>MM/dd/yyyy</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>WO_CREATED_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PROD_UNITS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!DATE_UNITS.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PROD_UNITS</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="TASK_UNITS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TASK_UNITS.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>TASK_UNITS</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="G1_TASK_CODE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!TASK.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>G1_TASK_CODE</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!ASSIGNED_TO.Value</Value>
+                    </SortExpression>
+                    <SortExpression>
+                      <Value>=Fields!TASK.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.02778in</Top>
+            <Height>0.42in</Height>
+            <Width>9.42583in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.63in</Height>
+        <Style />
+      </Body>
+      <Width>9.42583in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.77083in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox8">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Completed Workorders </Value>
+                      <Style>
+                        <FontSize>12pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Missing Tasks </Value>
+                      <Style>
+                        <FontSize>12pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox8</rd:DefaultName>
+              <Left>1.91542in</Left>
+              <Height>0.63417in</Height>
+              <Width>3.69792in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="ExecutionTime">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=DateAdd("h",1,Globals!ExecutionTime)</Value>
+                      <Style>
+                        <FontSize>9pt</FontSize>
+                        <Format>MM/dd/yyyy</Format>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Left</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>ExecutionTime</rd:DefaultName>
+              <Height>0.25in</Height>
+              <Width>1in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="PageNumber">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!PageNumber</Value>
+                      <Style>
+                        <FontSize>9pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Left</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>PageNumber</rd:DefaultName>
+              <Top>0.16542in</Top>
+              <Left>7.12375in</Left>
+              <Height>0.25in</Height>
+              <Width>1in</Width>
+              <ZIndex>2</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox12">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Page:</Value>
+                      <Style />
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox12</rd:DefaultName>
+              <Top>0.16542in</Top>
+              <Left>6.48486in</Left>
+              <Height>0.25in</Height>
+              <Width>0.58333in</Width>
+              <ZIndex>3</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="Textbox13">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>WOMissingTasks</Value>
+                      <Style>
+                        <FontSize>9pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox13</rd:DefaultName>
+              <Top>0.29167in</Top>
+              <Left>0.01958in</Left>
+              <Height>0.25in</Height>
+              <Width>1.1875in</Width>
+              <ZIndex>4</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>23dce2fe-a534-43c9-9fc5-71b50884eec4</rd:ReportID>
+</Report>
