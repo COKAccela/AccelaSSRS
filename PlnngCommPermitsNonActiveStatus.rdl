@@ -1,0 +1,1330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily" xmlns:am="http://schemas.microsoft.com/sqlserver/reporting/authoringmetadata">
+  <am:AuthoringMetadata>
+    <am:CreatedBy>
+      <am:Name>SSDTRS</am:Name>
+      <am:Version>17.11.35327.3</am:Version>
+    </am:CreatedBy>
+    <am:UpdatedBy>
+      <am:Name>SSDTRS</am:Name>
+      <am:Version>17.11.35327.3</am:Version>
+    </am:UpdatedBy>
+    <am:LastModifiedTimestamp>2025-06-06T14:20:52.9355826Z</am:LastModifiedTimestamp>
+  </am:AuthoringMetadata>
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="ACCELA">
+      <DataSourceReference>ACCELA</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>915650f5-91ae-4740-9370-46a3006becc0</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>ACCELA</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ToDate">
+            <Value>=Parameters!ToDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@FromDate">
+            <Value>=Parameters!FromDate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--DECLARE @ToDate date;
+--DECLARE @FromDate date;
+
+--set @FromDate = '2024-07-01';
+--SET @ToDate = '2024-12-31';
+-- Divided into two queries in order to improve performance
+-- First query only returns results that have parents, and returns its parents recursively, it must have an inner join on the cte_connect_by clause, otherwise performance will cause a timeout
+-- After the UNION, Second query returns all results with no recursion
+with cte_connect_by as (
+			select 0 as level, s.*, PR.B1_ALT_ID, PR.B1_APP_TYPE_ALIAS, PR.B1_APPL_STATUS, PR.B1_FILE_DD, PR.B1_APPL_STATUS_DATE
+			from xapp2ref s
+			inner join  B1PERMIT PR 
+				ON  PR.SERV_PROV_CODE=s.SERV_PROV_CODE
+				AND PR.B1_PER_ID1=s.B1_PER_ID1
+				AND PR.B1_PER_ID2=s.B1_PER_ID2
+				AND PR.B1_PER_ID3=s.B1_PER_ID3
+			left outer join bpermit_detail bdd 
+				ON  PR.SERV_PROV_CODE=BDD.SERV_PROV_CODE
+				AND PR.B1_PER_ID1=BDD.B1_PER_ID1
+				AND PR.B1_PER_ID2=BDD.B1_PER_ID2
+				AND PR.B1_PER_ID3=BDD.B1_PER_ID3
+			left outer join (
+				select
+				  SERV_PROV_CODE,
+				  B1_PER_ID1,
+				  B1_PER_ID2,
+				  B1_PER_ID3,
+				  AUDIT_MOD_DATE
+				  FROM BVALUATN
+				  where SERV_PROV_CODE = 'KNOXVILLE'
+				)  VALD
+				ON  PR.SERV_PROV_CODE = VALD.SERV_PROV_CODE
+				AND PR.B1_PER_ID1 = VALD.B1_PER_ID1
+				AND PR.B1_PER_ID2 = VALD.B1_PER_ID2
+				AND PR.B1_PER_ID3 = VALD.B1_PER_ID3
+			left outer join BCHCKBOX as bcb
+			ON PR.SERV_PROV_CODE=bcb.SERV_PROV_CODE
+				AND PR.B1_PER_ID1=bcb.B1_PER_ID1
+				AND PR.B1_PER_ID2=bcb.B1_PER_ID2
+				AND PR.B1_PER_ID3=bcb.B1_PER_ID3
+				AND bcb.b1_checkbox_desc = '[Estimated Cost (Job Value)]'
+			where  PR.SERV_PROV_CODE = 'KNOXVILLE'
+			AND PR.B1_PER_GROUP = 'Building'
+			and ( 
+				(  @ToDate is not null and @FromDate is not null and 
+					( (PR.B1_FILE_DD is not null and PR.B1_FILE_DD between @FromDate and @ToDate) or
+						(PR.rec_date is not null and PR.rec_date between @FromDate and @ToDate) or 
+						(PR.b1_appl_status_date  is not null and PR.b1_appl_status_date between @FromDate and @ToDate) or
+								(bdd.rec_date is not null and Cast(bdd.rec_date as Date) between @FromDate and @ToDate) or 
+								(bdd.b1_complete_date is not null and Cast(bdd.b1_complete_date as Date) between @FromDate and @ToDate) or
+								(bdd.disposition_date is not null and Cast(bdd.disposition_date  as Date) between @FromDate and @ToDate) 
+					)
+				)
+				and PR.B1_APPL_STATUS not in (
+					'Plan Review', 
+					'Revisions Required', 
+					'Ready to Issue', 
+					'Additional Info Required', 
+					'In Review',
+					'Waiting on Customer',
+					'Pending CO',
+					'Pending',
+					'HOLD',
+					'Inspection Phase',
+					'Staff Check'
+					)
+				and PR.B1_APP_TYPE_ALIAS in (
+					'Building Permit Commercial',
+					'Building Permit Residential',
+					'Electrical Permit Commercial',
+					'Electrical Permit Residential',
+					'Gas Permit Commercial',
+					'Gas Permit Residential',
+					'IBC Addition Permit',
+					'IBC Alteration Permit',
+					'IBC Compliance Certification',
+					'IBC Demolition Permit',
+					'IBC Electrical Permit',
+					'IBC Mechanical Permit',
+					'IBC New Construction Permit',
+					'IBC Plumbing Permit',
+					'IRC Addition Permit',
+					'IRC Alteration Permit',
+					'IRC Compliance Certification',
+					'IRC Demolition Permit',
+					'IRC Electrical Permit',
+					'IRC Mechanical Permit',
+					'IRC New Construction Permit',
+					'IRC Plumbing Permit',
+					'Mechanical Permit Commercial',
+					'Mechanical Permit Residential',
+					'Plans Review Commercial',
+					'Plans Review Residential',
+					'Plumbing Permit Commercial',
+					'Plumbing Permit Residential',
+					'Sign Permit Sign')
+						and pR.b1_per_id2 &lt;&gt; 'CONV'
+						)
+			union all                    
+			select level + 1 as level, s.*,  r.B1_ALT_ID, r.B1_APP_TYPE_ALIAS, r.B1_APPL_STATUS, r.B1_FILE_DD, r.B1_APPL_STATUS_DATE
+			from cte_connect_by r 
+			inner join xapp2ref s    
+			ON  r.MASTER_SERV_PROV_CODE = s.SERV_PROV_CODE
+			AND r.B1_MASTER_ID1 = s.B1_PER_ID1
+			AND r.B1_MASTER_ID2 = s.B1_PER_ID2 
+			AND r.B1_MASTER_ID3 = s.B1_PER_ID3
+			and  r.B1_RELATIONSHIP &lt;&gt; 'EST'
+			)
+select
+--cte.level	                     AS LEVEL,
+P.B1_ALT_ID                      AS PERMIT,
+P.B1_APP_TYPE_ALIAS              AS RECORD_TYPE,
+P.B1_APPL_STATUS                 AS RECORD_STATUS,
+P.B1_FILE_DD                     AS DATE_OPENED,
+P.B1_APPL_STATUS_DATE            AS STATUS_DATE,
+--P.B1_PER_GROUP + ',' + P.B1_PER_TYPE,
+P.B1_PER_GROUP + ',' + P.B1_PER_TYPE + ',' + P.B1_PER_SUB_TYPE + ',' + P.B1_PER_CATEGORY AS DESCR_RECORD_TYPE,
+P.SERV_PROV_CODE,
+P.B1_PER_ID1,
+P.B1_PER_ID2,
+P.B1_PER_ID3,
+PX.B1_ALT_ID                   AS PARENT_PERMIT
+FROM
+  B1PERMIT P
+	left outer join bpermit_detail bd 
+		ON  P.SERV_PROV_CODE=BD.SERV_PROV_CODE
+		AND P.B1_PER_ID1=BD.B1_PER_ID1
+		AND P.B1_PER_ID2=BD.B1_PER_ID2
+		AND P.B1_PER_ID3=BD.B1_PER_ID3
+--  the query results are joined to the parent permit of the current permit to get the parent permit id, and ancestors
+	INNER JOIN cte_connect_by cte 
+		ON P.SERV_PROV_CODE = cte.SERV_PROV_CODE
+		and P.B1_PER_ID1 = cte.B1_PER_ID1
+		and p.B1_PER_ID2 = cte.B1_PER_ID2
+		and p.B1_PER_ID3 = cte.B1_PER_ID3
+		and cte.B1_RELATIONSHIP &lt;&gt; 'EST'
+	left outer join b1permit PX -- subquery for your parent id
+		ON  PX.SERV_PROV_CODE = cte.MASTER_SERV_PROV_CODE
+		AND PX.B1_PER_ID1 = cte.B1_MASTER_ID1 
+		AND PX.B1_PER_ID2 = cte.B1_MASTER_ID2 
+		AND PX.B1_PER_ID3 = cte.B1_MASTER_ID3
+	WHERE
+	P.SERV_PROV_CODE = 'KNOXVILLE'
+	AND P.B1_PER_GROUP = 'Building'
+	-- Ignore date logic if a parent
+	AND 
+	( cte.level &gt; 0 or 
+		( 
+			(@ToDate is not null and @FromDate is not null and 
+				( (P.B1_FILE_DD is not null and Cast(P.B1_FILE_DD as Date) between @FromDate and @ToDate) or
+					(P.rec_date is not null and Cast(P.rec_date as Date) between @FromDate and @ToDate) or 
+					(P.b1_appl_status_date  is not null and Cast(P.b1_appl_status_date as Date) between @FromDate and @ToDate) or 
+					(bd.rec_date is not null and Cast(bd.rec_date as Date) between @FromDate and @ToDate) or 
+					(bd.b1_complete_date is not null and Cast(bd.b1_complete_date as Date) between @FromDate and @ToDate) or
+					(bd.disposition_date is not null and Cast(bd.disposition_date  as Date) between @FromDate and @ToDate) 
+				)
+			)
+		)
+	)
+	and P.B1_APPL_STATUS not in (
+	'Plan Review', 
+	'Revisions Required', 
+	'Ready to Issue', 
+	'Additional Info Required', 
+	'In Review',
+	'Waiting on Customer',
+	'Pending CO',
+	'Pending',
+	'HOLD',
+	'Inspection Phase',
+	'Staff Check'
+	)
+	and P.B1_APP_TYPE_ALIAS in (
+	'Building Permit Commercial',
+	'Building Permit Residential',
+	'Electrical Permit Commercial',
+	'Electrical Permit Residential',
+	'Gas Permit Commercial',
+	'Gas Permit Residential',
+	'IBC Addition Permit',
+	'IBC Alteration Permit',
+	'IBC Compliance Certification',
+	'IBC Demolition Permit',
+	'IBC Electrical Permit',
+	'IBC Mechanical Permit',
+	'IBC New Construction Permit',
+	'IBC Plumbing Permit',
+	'IRC Addition Permit',	
+	'IRC Alteration Permit',
+	'IRC Compliance Certification',
+	'IRC Demolition Permit',
+	'IRC Electrical Permit',
+	'IRC Mechanical Permit',
+	'IRC New Construction Permit',
+	'IRC Plumbing Permit',
+	'Mechanical Permit Commercial',
+	'Mechanical Permit Residential',
+	'Plans Review Commercial',
+	'Plans Review Residential',
+	'Plumbing Permit Commercial',
+	'Plumbing Permit Residential',
+	'Sign Permit Sign')
+	and p.b1_per_id2 &lt;&gt; 'CONV'
+GROUP BY cte.level,
+P.B1_ALT_ID,
+P.B1_APP_TYPE_ALIAS,
+P.B1_APPL_STATUS,
+P.B1_FILE_DD,
+P.B1_APPL_STATUS_DATE,
+P.B1_PER_GROUP + ',' + P.B1_PER_TYPE + ',' + P.B1_PER_SUB_TYPE + ',' + P.B1_PER_CATEGORY,
+--P.B1_PER_GROUP,  --
+--P.B1_PER_TYPE,
+--P.B1_PER_SUB_TYPE,
+--P.B1_PER_CATEGORY, --
+P.SERV_PROV_CODE,
+P.B1_PER_ID1,
+P.B1_PER_ID2,
+P.B1_PER_ID3,
+PX.B1_ALT_ID
+
+-- Here starts the second query
+
+UNION
+
+
+--DECLARE @ToDate date;
+--DECLARE @FromDate date;
+--set @FromDate = '2024-07-01';
+--SET @ToDate = '2024-12-31';
+
+select 
+P.B1_ALT_ID                         AS PERMIT,
+P.B1_APP_TYPE_ALIAS                 AS RECORD_TYPE,
+P.B1_APPL_STATUS                    AS RECORD_STATUS,
+CAST(P.B1_FILE_DD AS DATE)          AS DATE_OPENED,
+CAST(P.B1_APPL_STATUS_DATE AS DATE) AS STATUS_DATE,
+P.B1_PER_GROUP + ',' + P.B1_PER_TYPE + ',' + P.B1_PER_SUB_TYPE + ',' + P.B1_PER_CATEGORY AS DESCR_RECORD_TYPE,
+P.SERV_PROV_CODE,
+P.B1_PER_ID1,
+P.B1_PER_ID2,
+P.B1_PER_ID3,
+NULL AS PARENT_PERMIT
+FROM
+  B1PERMIT P 
+  left outer join  BPERMIT_DETAIL bd
+   ON  P.SERV_PROV_CODE=BD.SERV_PROV_CODE
+    AND P.B1_PER_ID1=BD.B1_PER_ID1
+    AND P.B1_PER_ID2=BD.B1_PER_ID2
+    AND P.B1_PER_ID3=BD.B1_PER_ID3 
+  WHERE	P.SERV_PROV_CODE = 'KNOXVILLE'
+	AND P.B1_PER_GROUP = 'Building'
+	-- Ignore date logic if a parent
+	AND 
+	( 
+		( 
+			(@ToDate is not null and @FromDate is not null and 
+				( (P.B1_FILE_DD is not null and Cast(P.B1_FILE_DD as Date) between @FromDate and @ToDate) or
+					(P.rec_date is not null and Cast(P.rec_date as Date) between @FromDate and @ToDate) or 
+					(P.b1_appl_status_date  is not null and Cast(P.b1_appl_status_date as Date) between @FromDate and @ToDate) or 
+					(bd.rec_date is not null and Cast(bd.rec_date as Date) between @FromDate and @ToDate) or 
+					(bd.b1_complete_date is not null and Cast(bd.b1_complete_date as Date) between @FromDate and @ToDate) or
+					(bd.disposition_date is not null and Cast(bd.disposition_date  as Date) between @FromDate and @ToDate) 
+				)
+			)
+		)
+	)
+and P.B1_APPL_STATUS not in (
+'Plan Review', 
+'Revisions Required', 
+'Ready to Issue', 
+'Additional Info Required', 
+'In Review',
+'Waiting on Customer',
+'Pending CO',
+'Pending',
+'HOLD',
+'Inspection Phase',
+'Staff Check'
+)
+and P.B1_APP_TYPE_ALIAS in (
+'Building Permit Commercial',
+'Building Permit Residential',
+'Electrical Permit Commercial',
+'Electrical Permit Residential',
+'Gas Permit Commercial',
+'Gas Permit Residential',
+'IBC Addition Permit',
+'IBC Alteration Permit',
+'IBC Compliance Certification',
+'IBC Demolition Permit',
+'IBC Electrical Permit',
+'IBC Mechanical Permit',
+'IBC New Construction Permit',
+'IBC Plumbing Permit',
+'IRC Addition Permit',
+'IRC Alteration Permit',
+'IRC Compliance Certification',
+'IRC Demolition Permit',
+'IRC Electrical Permit',
+'IRC Mechanical Permit',
+'IRC New Construction Permit',
+'IRC Plumbing Permit',
+'Mechanical Permit Commercial',
+'Mechanical Permit Residential',
+'Plans Review Commercial',
+'Plans Review Residential',
+'Plumbing Permit Commercial',
+'Plumbing Permit Residential',
+'Sign Permit Sign')
+ and p.b1_per_id2 &lt;&gt; 'CONV'
+ AND NOT EXISTS
+ (
+ SELECT * FROM xapp2ref XAP
+WHERE  p.SERV_PROV_CODE=XAP.SERV_PROV_CODE
+AND p.B1_PER_ID1=XAP.B1_PER_ID1
+AND p.B1_PER_ID2=XAP.B1_PER_ID2
+AND p.B1_PER_ID3=XAP.B1_PER_ID3
+and  XAP.B1_RELATIONSHIP &lt;&gt; 'EST')
+GROUP BY 
+P.B1_ALT_ID,
+P.B1_APP_TYPE_ALIAS,
+P.B1_APPL_STATUS,
+P.B1_FILE_DD,
+P.B1_APPL_STATUS_DATE,
+P.B1_PER_GROUP + ',' + P.B1_PER_TYPE + ',' + P.B1_PER_SUB_TYPE + ',' + P.B1_PER_CATEGORY,
+P.SERV_PROV_CODE,
+P.B1_PER_ID1,
+P.B1_PER_ID2,
+P.B1_PER_ID3
+order by PERMIT</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="PERMIT">
+          <DataField>PERMIT</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_TYPE">
+          <DataField>RECORD_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS">
+          <DataField>RECORD_STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DATE_OPENED">
+          <DataField>DATE_OPENED</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="STATUS_DATE">
+          <DataField>STATUS_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="DESCR_RECORD_TYPE">
+          <DataField>DESCR_RECORD_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SERV_PROV_CODE">
+          <DataField>SERV_PROV_CODE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID1">
+          <DataField>B1_PER_ID1</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID2">
+          <DataField>B1_PER_ID2</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="B1_PER_ID3">
+          <DataField>B1_PER_ID3</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PARENT_PERMIT">
+          <DataField>PARENT_PERMIT</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Permits In Non-Active Status</Value>
+                    <Style>
+                      <FontFamily>Segoe UI Light</FontFamily>
+                      <FontSize>24pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>textbox1</rd:DefaultName>
+            <Height>0.43in</Height>
+            <Width>9in</Width>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.22in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>PERMIT</Value>
+                                  <Style>
+                                    <FontStyle>Normal</FontStyle>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>RECORD TYPE</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>RECORD STATUS</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>DATE OPENED</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox11">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>STATUS DATE</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox6">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>DESCR RECORD TYPE</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox6</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>B1 PER ID1</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox8">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>B1 PER ID2</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>B1 PER ID3</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox9</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>PARENT PERMIT</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PERMIT">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PERMIT.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PERMIT</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RECORD_TYPE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!RECORD_TYPE.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>RECORD_TYPE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RECORD_STATUS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!RECORD_STATUS.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>RECORD_STATUS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DATE_OPENED">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!DATE_OPENED.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>DATE_OPENED</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="STATUS_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!STATUS_DATE.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>STATUS_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DESCR_RECORD_TYPE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!DESCR_RECORD_TYPE.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>DESCR_RECORD_TYPE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="B1_PER_ID1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!B1_PER_ID1.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>B1_PER_ID1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="B1_PER_ID2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!B1_PER_ID2.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>B1_PER_ID2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="B1_PER_ID3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!B1_PER_ID3.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>B1_PER_ID3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PARENT_PERMIT">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PARENT_PERMIT.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PARENT_PERMIT</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.43in</Top>
+            <Height>0.43in</Height>
+            <Width>10in</Width>
+            <ZIndex>1</ZIndex>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.86in</Height>
+        <Style />
+      </Body>
+      <Width>10in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="FromDate">
+      <DataType>DateTime</DataType>
+      <Prompt>From Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ToDate">
+      <DataType>DateTime</DataType>
+      <Prompt>To Date</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>FromDate</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>ToDate</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>dfa40ab8-3876-4e2d-aaae-6c49f7ec51bf</rd:ReportID>
+</Report>

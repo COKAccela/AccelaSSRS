@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>cf8c77eb-fb93-4bd4-9bde-b7fcd59b414a</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT B.Work_Order_Type_Code, A.RECORD_ID, A.RECORD_OPEN_DATE, A.RECORD_STATUS, A.RECORD_STATUS_DATE, A.UPDATED_BY, A.UPDATED_DATE, 
+A.ACTION_BY_NAME_FML#, A.STATUS, A.TASK, A.TASK_IS_ACTIVE,TASK_IS_COMPLETE
+FROM V_WORKFLOW_HISTORY A left outer join 
+      (
+  SELECT SERV_PROV_CODE, REC_FUL_NAM, B1_PER_ID1, B1_PER_ID2, B1_PER_ID3
+  ,WO_NUM, WORK_CENTER, ASSIGNED_TO, ASSIGNED_GROUP_DESCR, WORK_ORDER_TYPE_CODE,  ADDRESS,
+    B1_APPL_STATUS,STATUS_DATE,CREATED_DATE
+ 
+
+  FROM ( 
+  SELECT a.SERV_PROV_CODE,
+    a.rec_ful_nam,
+    a.B1_PER_ID1,
+    a.B1_PER_ID2,
+    a.B1_PER_ID3,
+    a.B1_ALT_ID WO_NUM,
+    ab.B1_CHECKLIST_COMMENT WORK_CENTER,
+    ad.b1_asgn_staff AS ASSIGNED_TO,
+    adx.R3_SUBGROUP_DESC ASSIGNED_GROUP_DESCR,
+    aa.B1_CHECKLIST_COMMENT WORK_ORDER_TYPE_CODE,
+    TRIM(CAST(ISNULL(b.B1_HSE_NBR_START,'0') AS VARCHAR)
+    + ' '
+    + TRIM (ISNULL(b.B1_STR_DIR,' ')
+    + ' '
+    + ISNULL(b.B1_STR_NAME,' '))
+    + ' '
+    + ISNULL(b.B1_STR_SUFFIX,' ')) ADDRESS,
+	a.B1_APPL_STATUS AS B1_APPL_STATUS,
+	a.B1_APPL_STATUS_DATE STATUS_DATE,
+	a.REC_DATE CREATED_DATE
+
+   
+  FROM B1PERMIT a LEFT OUTER JOIN 
+
+    B3ADDRES b ON   b.SERV_PROV_CODE                  = a.SERV_PROV_CODE
+  AND b.B1_PER_ID1                     = a.B1_PER_ID1
+  AND b.B1_PER_ID2                     = a.B1_PER_ID2
+  AND b.B1_PER_ID3                     = a.B1_PER_ID3
+  AND b.B1_PRIMARY_ADDR_FLG           = 'Y'
+
+  LEFT OUTER JOIN BCHCKBOX ab ON 
+    ab.SERV_PROV_CODE                 = a.SERV_PROV_CODE
+  AND ab.B1_PER_ID1                     = a.B1_PER_ID1
+  AND ab.B1_PER_ID2                     = a.B1_PER_ID2
+  AND ab.B1_PER_ID3                     = a.B1_PER_ID3
+  AND ab.B1_CHECKBOX_DESC              = 'Work Center'
+  LEFT OUTER JOIN BPERMIT_DETAIL ad ON 
+    ad.SERV_PROV_CODE                = a.SERV_PROV_CODE
+  AND ad.B1_PER_ID1                    = a.B1_PER_ID1
+  AND ad.B1_PER_ID2                     = a.B1_PER_ID2
+  AND ad.B1_PER_ID3                     = a.B1_PER_ID3
+
+  LEFT OUTER JOIN  BCHCKBOX aa ON  aa.SERV_PROV_CODE  = a.SERV_PROV_CODE
+  AND aa.B1_PER_ID1                     = a.B1_PER_ID1
+  AND aa.B1_PER_ID2                     = a.B1_PER_ID2
+  AND aa.B1_PER_ID3                    = a.B1_PER_ID3
+  AND aa.B1_CHECKBOX_DESC              = 'Work Order Type'
+
+  LEFT OUTER JOIN G3DPTTYP adx ON
+   adx.R3_DEPT_KEY                  = ad.B1_ASGN_DEPT
+
+  WHERE a.B1_PER_TYPE                      = 'Work Order'
+  AND a.B1_PER_SUB_TYPE                    = 'Public Service'
+  AND a.B1_APPL_STATUS                    &lt;&gt; 'Canceled'
+ ) MAINS
+ 
+ ) B on A.RECORD_ID  = B.WO_NUM 
+	  and  B.Work_Order_Type_Code = 'PS52 Engineering Construction'
+WHERE   A.ACTION_BY_DEPT in ('Stormwater', 'Public Service Work Order') AND 
+A.PROCESS_NAME in ('WO_SW', 'WO_PUB_SER') AND 
+A.TASK LIKE '%Setup Work Order%' AND
+A.STATUS IN ('Approved', 'SW Approved') AND
+A.TASK_IS_COMPLETE = 'Y' AND
+a.AGENCY_ID='KNOXVILLE' and 
+ (A.RECORD_ID = @ID)</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="RECORD_ID">
+          <DataField>RECORD_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="WORK_ORDER_TYPE_CODE">
+          <DataField>Work_Order_Type_Code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ACTION_BY_NAME_FML_">
+          <DataField>ACTION_BY_NAME_FML#</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_OPEN_DATE">
+          <DataField>RECORD_OPEN_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS">
+          <DataField>RECORD_STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RECORD_STATUS_DATE">
+          <DataField>RECORD_STATUS_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_BY">
+          <DataField>UPDATED_BY</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UPDATED_DATE">
+          <DataField>UPDATED_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="STATUS">
+          <DataField>STATUS</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK">
+          <DataField>TASK</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK_IS_ACTIVE">
+          <DataField>TASK_IS_ACTIVE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TASK_IS_COMPLETE">
+          <DataField>TASK_IS_COMPLETE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.89583in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.35in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.49375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="STATUS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!STATUS.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>STATUS</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="UPDATED_BY">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UPDATED_BY.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>UPDATED_BY</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox4">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UPDATED_DATE.Value</Value>
+                                  <Style>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>g</Format>
+                                    <Color>Red</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>3.73958in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.21in</Height>
+        <Style />
+      </Body>
+      <Width>3.73958in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <Prompt>ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>c9368920-96d3-4076-be24-c9a8df70bb4c</rd:ReportID>
+</Report>

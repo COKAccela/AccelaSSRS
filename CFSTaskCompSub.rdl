@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>80a48e01-af1a-4c79-a73f-64caa4b6c40d</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@WO_NUM">
+            <Value>=Parameters!WO_NUM.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select PROD_DATE , Quantity, Pounds from (
+select 
+  WO_NUM,POUNDS,QUANTITY,PROD_DATE
+  from ( 
+  SELECT a.Wo_num,
+    convert(float,TW.ATTRIBUTE_VALUE) Pounds,
+    convert(float,TQ.ATTRIBUTE_VALUE) Quantity,
+    format(cast(TD.ATTRIBUTE_VALUE as date),'MM/dd/yyyy') prod_date
+  FROM (  SELECT SERV_PROV_CODE, REC_FUL_NAM, B1_PER_ID1, B1_PER_ID2, B1_PER_ID3,WO_NUM
+  FROM ( 
+  SELECT a.SERV_PROV_CODE,
+    a.rec_ful_nam,
+    a.B1_PER_ID1,
+    a.B1_PER_ID2,
+    a.B1_PER_ID3,
+    a.B1_ALT_ID WO_NUM
+
+  FROM B1PERMIT a 
+    
+  WHERE a.B1_PER_TYPE                      = 'Work Order'
+  AND a.B1_PER_SUB_TYPE                    = 'Public Service'
+  AND a.B1_APPL_STATUS                    &lt;&gt; 'Canceled'
+  ) cc ) a
+  inner join BAPPSPECTABLE_VALUE TX on TX.SERV_PROV_CODE             = a.SERV_PROV_CODE
+  AND TX.B1_PER_ID1                   = a.B1_PER_ID1
+  AND TX.B1_PER_ID2                   = a.B1_PER_ID2
+  AND TX.B1_PER_ID3                   = a.B1_PER_ID3
+  left outer join   BAPPSPECTABLE_VALUE TD on 
+   TD.SERV_PROV_CODE            = TX.SERV_PROV_CODE
+  AND TD.B1_PER_ID1               = TX.B1_PER_ID1
+  AND TD.B1_PER_ID2               = TX.B1_PER_ID2
+  AND TD.B1_PER_ID3               = TX.B1_PER_ID3
+  AND TD.GROUP_NAME               = 'WO_APU'
+  AND TD.TABLE_NAME               = 'ACTUAL PRODUCTION UNITS'
+  AND TD.ROW_INDEX              = TX.ROW_INDEX
+  AND TD.COLUMN_NAME              = 'Date'
+  AND isnull(TD.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '
+   left outer join  BAPPSPECTABLE_VALUE TQ on 
+      TQ.SERV_PROV_CODE            = TD.SERV_PROV_CODE
+  AND TQ.B1_PER_ID1    = TD.B1_PER_ID1
+  AND TQ.B1_PER_ID2    = TD.B1_PER_ID2
+  AND TQ.B1_PER_ID3    = TD.B1_PER_ID3
+  AND TQ.GROUP_NAME    = 'WO_APU'
+  AND TQ.TABLE_NAME    = 'ACTUAL PRODUCTION UNITS'
+  AND TQ.COLUMN_NAME              = 'Quantity'
+  AND TQ.ROW_INDEX               = TD.ROW_INDEX
+  AND isnull(TQ.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '
+  left outer join  BAPPSPECTABLE_VALUE TW on    TW.SERV_PROV_CODE           = TQ.SERV_PROV_CODE
+  AND TW.B1_PER_ID1                = TQ.B1_PER_ID1
+  AND TW.B1_PER_ID2                = TQ.B1_PER_ID2
+  AND TW.B1_PER_ID3                = TQ.B1_PER_ID3
+  AND TW.GROUP_NAME                = 'WO_APU'
+  AND TW.TABLE_NAME                = 'ACTUAL PRODUCTION UNITS'
+  AND TW.COLUMN_NAME             = 'Weight'
+  AND TW.ROW_INDEX                = TQ.ROW_INDEX
+  AND isnull(TW.ATTRIBUTE_VALUE,' ') &lt;&gt; ' '
+
+  WHERE 
+   TX.GROUP_NAME                   = 'WO_APU'
+  AND TX.TABLE_NAME                   = 'ACTUAL PRODUCTION UNITS'
+  AND TX.COLUMN_NAME                  = 'Task'
+  AND TX.REC_STATUS                   = 'A'
+
+ 
+ 
+ 
+  UNION
+  SELECT a.Wo_num,
+    0 Pounds,
+    isnull(a.B1_ACTUAL_PROD_UNITS,0) Quantity,
+    a.STATUS_DATE prod_date
+  FROM (  SELECT SERV_PROV_CODE, REC_FUL_NAM, B1_PER_ID1, B1_PER_ID2, B1_PER_ID3,WO_NUM,B1_ACTUAL_PROD_UNITS,STATUS_DATE
+  FROM ( 
+  SELECT a.SERV_PROV_CODE,
+    a.rec_ful_nam,
+    a.B1_PER_ID1,
+    a.B1_PER_ID2,
+    a.B1_PER_ID3,
+    a.B1_ALT_ID WO_NUM
+	, ad.b1_actual_prod_units
+	,a.B1_APPL_STATUS_DATE STATUS_DATE
+
+  FROM B1PERMIT a 
+  left outer join BPERMIT_DETAIL ad on  ad.SERV_PROV_CODE                = a.SERV_PROV_CODE
+  AND ad.B1_PER_ID1                     = a.B1_PER_ID1
+  AND ad.B1_PER_ID2                     = a.B1_PER_ID2
+  AND ad.B1_PER_ID3                     = a.B1_PER_ID3
+    
+  WHERE a.B1_PER_TYPE                      = 'Work Order'
+  AND a.B1_PER_SUB_TYPE                    = 'Public Service'
+  AND a.B1_APPL_STATUS                    &lt;&gt; 'Canceled'
+  ) cc )  a
+  WHERE NOT EXISTS
+    (SELECT NULL
+    FROM BAPPSPECTABLE_VALUE Ticket
+    WHERE Ticket.SERV_PROV_CODE = a.SERV_PROV_CODE
+    AND Ticket.B1_PER_ID1       = a.B1_PER_ID1
+    AND Ticket.B1_PER_ID2       = a.B1_PER_ID2
+    AND Ticket.B1_PER_ID3       = a.B1_PER_ID3
+    AND Ticket.GROUP_NAME       = 'WO_APU'
+    AND Ticket.TABLE_NAME       = 'ACTUAL PRODUCTION UNITS'
+    AND Ticket.COLUMN_NAME      = 'Task'
+    AND Ticket.REC_STATUS       = 'A'
+    )
+	) mm
+	) cfs 
+	 where wo_num = @WO_NUM
+	 --'WO-PS-16-016854'
+
+	</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="PROD_DATE">
+          <DataField>PROD_DATE</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="QUANTITY">
+          <DataField>Quantity</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="POUNDS">
+          <DataField>Pounds</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="table1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>0.73958in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.75in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.34375in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.21in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="PROD_DATE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PROD_DATE.Value</Value>
+                                  <Style>
+                                    <Format>MM/dd/yyyy</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>PROD_DATE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="QUANTITY">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!POUNDS.Value</Value>
+                                  <Style>
+                                    <Format>#,0.00;(#,0.00)</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>QUANTITY</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="POUNDS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!QUANTITY.Value</Value>
+                                  <Style>
+                                    <Format>#,0.00;(#,0.00)</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>POUNDS</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>0.21in</Height>
+            <Width>1.83333in</Width>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>0.21in</Height>
+        <Style />
+      </Body>
+      <Width>1.83333in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="WO_NUM">
+      <DataType>String</DataType>
+      <Prompt>WO NUM</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>WO_NUM</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>cbee6a56-16d0-42ca-9e2b-da086e0779a0</rd:ReportID>
+</Report>

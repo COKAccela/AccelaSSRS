@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="Accela">
+      <DataSourceReference>/NONPROD1/KNOXVILLE/KNOXVILLE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>03188da9-b939-4f7b-b484-1075347615ad</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>Accela</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT     B1PERMIT.B1_ALT_ID, GWORK_ORDER_COSTING.COST_UNIT_TYPE, GWORK_ORDER_COSTING.COST_ITEM, 
+                      SUM(CASE WHEN GCOSTING_QUANTITY.COST_FACTOR = '1' THEN GCOSTING_QUANTITY.COST_QUANTITY END) AS RegularHours, 
+                      SUM(CASE WHEN GCOSTING_QUANTITY.COST_FACTOR = '1.5' THEN GCOSTING_QUANTITY.COST_QUANTITY END) AS OTHours, 
+                      SUM(CASE WHEN GCOSTING_QUANTITY.COST_FACTOR = '2' THEN GCOSTING_QUANTITY.COST_QUANTITY END) AS DoubleHours
+FROM         GWORK_ORDER_COSTING, B1PERMIT, GCOSTING_QUANTITY
+WHERE     GWORK_ORDER_COSTING.SERV_PROV_CODE = B1PERMIT.SERV_PROV_CODE AND GWORK_ORDER_COSTING.B1_PER_ID1 = B1PERMIT.B1_PER_ID1 AND 
+                      GWORK_ORDER_COSTING.B1_PER_ID2 = B1PERMIT.B1_PER_ID2 AND GWORK_ORDER_COSTING.B1_PER_ID3 = B1PERMIT.B1_PER_ID3 AND 
+                      GWORK_ORDER_COSTING.SERV_PROV_CODE = GCOSTING_QUANTITY.SERV_PROV_CODE AND 
+                      GWORK_ORDER_COSTING.B1_PER_ID1 = GCOSTING_QUANTITY.B1_PER_ID1 AND 
+                      GWORK_ORDER_COSTING.B1_PER_ID2 = GCOSTING_QUANTITY.B1_PER_ID2 AND 
+                      GWORK_ORDER_COSTING.B1_PER_ID3 = GCOSTING_QUANTITY.B1_PER_ID3 AND 
+                      GWORK_ORDER_COSTING.COST_SEQ_NBR = GCOSTING_QUANTITY.ENTITY_ID AND B1PERMIT.B1_ALT_ID = (@ID) AND 
+                      gwork_order_costing.cost_unit_type = 'Hours'
+					  and B1PERMIT.SERV_PROV_CODE='KNOXVILLE'
+GROUP BY B1PERMIT.B1_ALT_ID, GWORK_ORDER_COSTING.COST_UNIT_TYPE, GWORK_ORDER_COSTING.COST_ITEM</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="B1_ALT_ID">
+          <DataField>B1_ALT_ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COST_UNIT_TYPE">
+          <DataField>COST_UNIT_TYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="COST_ITEM">
+          <DataField>COST_ITEM</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="REGULARHOURS">
+          <DataField>RegularHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="OTHOURS">
+          <DataField>OTHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="DOUBLEHOURS">
+          <DataField>DoubleHours</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Textbox3">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Sum(Fields!REGULARHOURS.Value, "DataSet1")+Sum(Fields!OTHOURS.Value, "DataSet1")+Sum(Fields!DOUBLEHOURS.Value, "DataSet1")</Value>
+                    <Style>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <Format>#,0.00;(#,0.00);'-'</Format>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>0.01208in</Top>
+            <Height>0.25in</Height>
+            <Width>2.04167in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <Height>0.26208in</Height>
+        <Style />
+      </Body>
+      <Width>2.04167in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <Prompt>ID</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>1</NumberOfColumns>
+      <NumberOfRows>1</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>ID</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>https://supp-ssrs.us.accela.com/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>ddc24ea8-ee1a-4f35-a0a4-0bd02ea01332</rd:ReportID>
+</Report>
