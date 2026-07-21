@@ -11,7 +11,7 @@
       <am:Name>MSRB</am:Name>
       <am:Version>15.1.30001.02</am:Version>
     </am:UpdatedBy>
-    <am:LastModifiedTimestamp>2026-04-29T18:30:36.7125816Z</am:LastModifiedTimestamp>
+    <am:LastModifiedTimestamp>2026-07-21T18:13:12.9991655Z</am:LastModifiedTimestamp>
   </am:AuthoringMetadata>
   <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
   <AutoRefresh>0</AutoRefresh>
@@ -61,6 +61,10 @@
 	,d.B1_FULL_NAME CONTACT_NAME
 	,d.B1_EMAIL CONTACT_EMAIL
 	, dbo.FN_GET_APP_SPEC_INFO ('KNOXVILLE', a.B1_PER_ID1, a.B1_PER_ID2 ,a.B1_PER_ID3, 'Disturbed Acreage') DISTRIBUTED_ACREAGE
+	,CASE
+	 WHEN a.B1_ALT_ID LIKE 'LAND%' THEN dbo.FN_GET_APP_SPEC_INFO ('KNOXVILLE', a.B1_PER_ID1, a.B1_PER_ID2 ,a.B1_PER_ID3, 'Engineering Scope of Work')
+	 WHEN  a.B1_ALT_ID LIKE '%IRC%' OR a.B1_ALT_ID LIKE '%IBC%' THEN  dbo.FN_GET_APP_SPEC_INFO ('KNOXVILLE', a.B1_PER_ID1, a.B1_PER_ID2 ,a.B1_PER_ID3, 'Approved Scope of Work')
+	END AS SCOPE_OF_WORK
 --	, a.B1_APPL_STATUS SR_STATUS
    from B1PERMIT a
    INNER JOIN
@@ -155,6 +159,10 @@ order by STATUS_DATE desc;</CommandText>
           <rd:TypeName>System.String</rd:TypeName>
           <DataField>DISTRIBUTED_ACREAGE</DataField>
         </Field>
+        <Field Name="SCOPE_OF_WORK">
+          <rd:TypeName>System.String</rd:TypeName>
+          <DataField>SCOPE_OF_WORK</DataField>
+        </Field>
       </Fields>
     </DataSet>
   </DataSets>
@@ -222,6 +230,9 @@ order by STATUS_DATE desc;</CommandText>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.83332in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -467,6 +478,39 @@ order by STATUS_DATE desc;</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>DISTRIBUTED ACREAGE</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>SCOPE OF WORK</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
                                     <FontWeight>Bold</FontWeight>
@@ -744,12 +788,45 @@ order by STATUS_DATE desc;</CommandText>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="SCOPE_OF_WORK">
+                          <rd:DefaultName>SCOPE_OF_WORK</rd:DefaultName>
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SCOPE_OF_WORK.Value</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
                   </TablixCells>
                 </TablixRow>
               </TablixRows>
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
+                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -774,7 +851,7 @@ order by STATUS_DATE desc;</CommandText>
             <Top>0.78833in</Top>
             <Left>0.055in</Left>
             <Height>0.45in</Height>
-            <Width>5.11168in</Width>
+            <Width>5.945in</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
